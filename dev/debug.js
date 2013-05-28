@@ -23,6 +23,7 @@ function launchDebugProcess()
 		{
 			stdout.shift();
 		}
+		drawScreen();
 	});
 	debug_process.stderr.on("data", function(data) {
 		stderr = stderr.concat(data.toString().split(/\r?\n/));
@@ -35,17 +36,28 @@ function launchDebugProcess()
 		{
 			stderr.shift();
 		}
+		drawScreen();
 	});
 	debug_process.on("exit", function(code, signal) {
 		drawScreen();
 		debug_process_exited = true;
-		process.stdin.on("data", function(data) {
-			launchDebugProcess();
-			process.stdin.removeAllListeners("data");
-		});
 		//process.exit(0);
 	});
+	drawScreen();
 }
+
+var relaunchTimeout;
+process.stdin.on("data", function(data) {
+	try {
+		debug_process.kill("SIGKILL");
+	} catch(e) {
+	}
+	clearTimeout(relaunchTimeout);
+	relaunchTimeout = setTimeout(launchDebugProcess, 250);
+});
+process.stdout.on("resize", function() {
+	drawScreen();
+});
 
 
 function lf()
@@ -114,26 +126,29 @@ function drawScreen()
 		cursor.goto(hx,i+4).write(stderr[i].substring(0,hx-2));
 	}
 	
-	cursor.goto(0,y);
-	
+	var msg = "Press ENTER key to respawn debug process...";
 	if(debug_process_exited)
 	{
-		var msg = "Press ENTER key to respawn debug process...";
-		cursor.goto(x-msg.length,1)
-			.red()
-			.bold()
-			.write(msg)
-		.reset();
-		cursor.goto(1,y-1);
+		msg = "PROCESS STOPPED: " + msg;
+		cursor.goto(x-msg.length,1).red().bold();
+	} else {
+		cursor.goto(x-msg.length,1).grey();
 	}
+	cursor.write(msg).reset();
+	
+	
+	cursor.goto(1,y-1);
 }
 
-setInterval(drawScreen, 250)
+setInterval(drawScreen, 1000)
 
 launchDebugProcess();
 
 process.on("exit", function() {
 	debug_process_exited = false;
 	drawScreen();
-	debug_process.kill(0);
+	try {
+		debug_process.kill("SIGKILL");
+	} catch(e) {
+	}
 });
