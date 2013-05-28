@@ -1,11 +1,11 @@
 var	ansi		= require("ansi"),
 	cursor		= ansi(process.stdout),
+	usage		= require("usage"),
 	spawn		= require("child_process").spawn;
 
 var debug_process;
 var debug_process_exited;
 var stdout = [], stderr = [];
-
 function launchDebugProcess()
 {
 	stdout = [];
@@ -41,24 +41,9 @@ function launchDebugProcess()
 	debug_process.on("exit", function(code, signal) {
 		drawScreen();
 		debug_process_exited = true;
-		//process.exit(0);
 	});
 	drawScreen();
 }
-
-var relaunchTimeout;
-process.stdin.on("data", function(data) {
-	try {
-		debug_process.kill("SIGKILL");
-	} catch(e) {
-	}
-	clearTimeout(relaunchTimeout);
-	relaunchTimeout = setTimeout(launchDebugProcess, 250);
-});
-process.stdout.on("resize", function() {
-	drawScreen();
-});
-
 
 function lf()
 {
@@ -68,7 +53,6 @@ function clear()
 {
 	cursor.write(Array.apply(null, Array(process.stdout.getWindowSize()[1])).map(lf).join('')).eraseData(2).goto(1,1);
 }
-
 function drawScreen()
 {
 	var x=process.stdout.getWindowSize()[0], y=process.stdout.getWindowSize()[1];
@@ -83,19 +67,17 @@ function drawScreen()
 		.write("Debugging Node Servers")
 	.reset();
 	
-	var mem = process.memoryUsage();
-	var mem_total = (mem.heapTotal/1048576).toFixed(2);
-	var mem_used = (mem.heapUsed/1048576).toFixed(2);
+	
+	var cpu = cpu_usage.toFixed(3);
+	var mem = (memory_usage/1048576).toFixed(2);
 	var uptime_min = Math.floor(process.uptime()/60);
 	var uptime_sec = Math.floor(process.uptime()%60);
 	cursor.goto(1,2)
 		.cyan()
 		.bold()
-		.write("Memory: ")
-		.write(mem_used+"/"+mem_total+" MB")
-		.write("     ")
-		.write("Uptime: ")
-		.write(uptime_min+":"+(uptime_sec<10?"0":"")+uptime_sec)
+		.write("CPU: ").write(cpu).write("     ")
+		.write("Memory: ").write(mem+" MB").write("     ")
+		.write("Uptime: ").write(uptime_min+":"+(uptime_sec<10?"0":"")+uptime_sec)
 	.reset();
 	
 	cursor.goto(1,3)
@@ -140,10 +122,26 @@ function drawScreen()
 	cursor.goto(1,y-1);
 }
 
-setInterval(drawScreen, 1000)
+var cpu_usage=0, memory_usage=0;
+setInterval(function() {
+	usage.lookup(process.pid, function(err, res) {
+		cpu_usage = res.cpu;
+		memory_usage = res.memory;
+	});
+}, 100);
 
-launchDebugProcess();
-
+var relaunchTimeout;
+process.stdin.on("data", function(data) {
+	try {
+		debug_process.kill("SIGKILL");
+	} catch(e) {
+	}
+	clearTimeout(relaunchTimeout);
+	relaunchTimeout = setTimeout(launchDebugProcess, 250);
+});
+process.stdout.on("resize", function() {
+	drawScreen();
+});
 process.on("exit", function() {
 	debug_process_exited = false;
 	drawScreen();
@@ -152,3 +150,6 @@ process.on("exit", function() {
 	} catch(e) {
 	}
 });
+
+setInterval(drawScreen, 1000);
+launchDebugProcess();

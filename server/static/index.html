@@ -1,0 +1,21 @@
+<html>
+<head>
+	<title>Test Page</title>
+	<script src="/js/socket.io.js"></script>
+	<script>
+		var socket = io.connect("http://192.168.0.126:8000");
+		socket.on("connect", function(){
+			socket.on("message", function(message, callback) {
+				console.log(message);
+			});
+			socket.on("disconnect", function() {
+				console.log("Disconnected");
+			});
+			socket.send("Test Message");
+		});
+	</script>
+</head>
+<body>
+	Test Page
+</body>
+</html>
