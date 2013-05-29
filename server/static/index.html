@@ -3,7 +3,7 @@
 	<title>Test Page</title>
 	<script src="/js/socket.io.js"></script>
 	<script>
-		var socket = io.connect("http://192.168.0.126:8000");
+		var socket = io.connect(window.location.origin+":25480");
 		socket.on("connect", function(){
 			socket.on("message", function(message, callback) {
 				console.log(message);

@@ -1,22 +1,21 @@
 {
-	"title": "Path Title",
-	"path": "/",
+	"title": "Token Handler",
+	"path": "/token/?",
 	"methods": [
 		{
-			"method": "get",
-			"notes": "Note describing post method",
+			"method": "post",
+			"notes": "Generate new user token.",
 			"parameters": [
 				{
-					"name": "param1",
-					"notes": "Note about param1",
+					"name": "email",
+					"notes": "Users login using email",
 					"required": true,
-					"example": "14"
+					"example": "abc@xyz.com"
 				},
 				{
-					"name": "param2",
+					"name": "password",
 					"notes": "Note about param2",
-					"required": false,
-					"example": "'asdf'"
+					"required": true
 				}
 			],
 			"success": {

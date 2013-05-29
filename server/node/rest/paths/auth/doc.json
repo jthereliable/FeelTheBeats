@@ -1,0 +1,120 @@
+{
+	"title": "Token Handler",
+	"path": "/auth/?",
+	"methods": [
+		{
+			"method": "post",
+			"notes": "Generate new user token.",
+			"parameters": [
+				{
+					"name": "email",
+					"notes": "Users login using email",
+					"required": true,
+					"example": "abc@xyz.com"
+				},
+				{
+					"name": "password",
+					"notes": "Note about param2",
+					"required": true
+				}
+			],
+			"success": {
+				"notes": "Success output notes",
+				"example": {
+					"success": true,
+					"token": "sometokenhere",
+					"user": {
+						"name": "someusername"
+					}
+				}
+			},
+			"error": {
+				"notes": "Error output notes",
+				"example": {
+					"success": false,
+					"error": "error message",
+					"code": 1
+				}
+			}
+		},
+		{
+			"method": "get",
+			"notes": "Check user token status.",
+			"parameters": [
+				{
+					"name": "token",
+					"notes": "User token",
+					"required": true
+				}
+			],
+			"success": {
+				"notes": "Success output notes",
+				"example": {
+					"success": true,
+					"checked": true,
+					"expired": false,
+					"valid": true
+				}
+			},
+			"error": {
+				"notes": "Error output notes",
+				"example": {
+					"success": false,
+					"error": "error message",
+					"code": 1
+				}
+			}
+		},
+		{
+			"method": "put",
+			"notes": "Renew user token.",
+			"parameters": [
+				{
+					"name": "token",
+					"notes": "User token",
+					"required": true
+				}
+			],
+			"success": {
+				"notes": "Success output notes",
+				"example": {
+					"success": true,
+					"token": "sometokenhere"
+				}
+			},
+			"error": {
+				"notes": "Error output notes",
+				"example": {
+					"success": false,
+					"error": "error message",
+					"code": 1
+				}
+			}
+		},
+		{
+			"method": "delete",
+			"notes": "Delete all tokens issued to user.",
+			"parameters": [
+				{
+					"name": "token",
+					"notes": "User token",
+					"required": true
+				}
+			],
+			"success": {
+				"notes": "Success output notes",
+				"example": {
+					"success": true
+				}
+			},
+			"error": {
+				"notes": "Error output notes",
+				"example": {
+					"success": false,
+					"error": "error message",
+					"code": 1
+				}
+			}
+		}
+	]
+}
