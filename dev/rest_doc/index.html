@@ -40,9 +40,6 @@
 					return false;
 				}
 			});
-			$("#json_doc").on("keyup", updateOutput);
-			$("#json_doc").on("keypress", updateOutput);
-			$("#json_doc").on("keydown", updateOutput);
 			
 			var waitTimeout, template;
 			function updateOutput()
@@ -82,6 +79,32 @@
 					console.log(e.toString());
 				}
 			}
+			$("#json_doc").on("keyup", updateOutput);
+			$("#json_doc").on("keypress", updateOutput);
+			$("#json_doc").on("keydown", updateOutput);
+			
+			$(window).on("hashchange", function() {
+				var doc = "doc.json";
+				var hash = window.location.hash;
+				if(hash.length>0 && hash.charAt(0)=="#" && hash.charAt(1)=="/")
+				{
+					doc = window.location.hash.substring(1);
+					doc = "doc" + doc;
+				} else {
+					window.location.hash = "#";
+				}
+				$.ajax({
+					"url": doc,
+					"dataType": "text"
+				}).done(function(data) {
+					$("#json_doc").val(data);
+					renderOutput();
+					$(".method .collapsible").hide();
+				}).fail(function() {
+					window.location.hash = "#";
+					$(window).trigger("hashchange");
+				});
+			});
 			
 			Handlebars.registerHelper("json", function(obj) {
 				return new Handlebars.SafeString(JSON.stringify(obj, null, "\t").replace(/[\r\n]{1,2}/g,"<br/>").replace(/\t/g,"&nbsp;&nbsp;"));
@@ -89,23 +112,16 @@
 			async.series([
 				function(next) {
 					$.ajax({
-						"url": "doc.json",
-						"dataType": "text"
-					}).done(function(data) {
-						$("#json_doc").val(data);
-						next();
-					});
-				},
-				function(next) {
-					$.ajax({
 						"url": "rest_doc.handlebars",
 						"dataType": "text"
 					}).done(function(data) {
 						template = Handlebars.compile(data);
-						renderOutput();
-						$(".method .collapsible").hide();
 						next();
 					});
+				},
+				function(next) {
+					$(window).trigger("hashchange");
+					next();
 				}
 			]);
 		});
