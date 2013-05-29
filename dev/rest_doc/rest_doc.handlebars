@@ -1,0 +1,68 @@
+<div class="title">{{title}}</div>
+<div class="path">{{path}}</div>
+
+<div class="methods">
+{{#each methods}}
+	<div class="method">
+		<div class="name">{{method}}</div>
+		{{#if notes}}
+		<div class="notes">{{notes}}</div>
+		{{/if}}
+		
+		<div class="collapsible">
+			<div class="parameters">
+			{{#each parameters}}
+				<div class="parameter{{#if required}} required{{/if}}">
+					<div class="name">{{name}}</div>
+					<div class="notes">{{notes}}</div>
+					{{#if example}}
+					<div class="example">{{example}}</div>
+					{{/if}}
+					<div style="clear:both"></div>
+				</div>
+			{{/each}}
+			</div>
+			
+			{{#if success}}
+			{{#with success}}
+			<div class="output success">
+				{{#if notes}}
+				<div class="notes">{{notes}}</div>
+				{{/if}}
+				{{#if example}}
+				<div class="example">{{json example}}</div>
+				{{/if}}
+			</div>
+			{{/with}}
+			{{/if}}
+			
+			{{#if error}}
+			{{#with error}}
+			<div class="output error">
+				{{#if notes}}
+				<div class="notes">{{notes}}</div>
+				{{/if}}
+				{{#if example}}
+				<div class="example">{{json example}}</div>
+				{{/if}}
+			</div>
+			{{/with}}
+			{{/if}}
+			
+			{{#if example}}
+			{{#with example}}
+			<div class="example">
+				<div class="notes">{{notes}}</div>
+				<div class="input">
+					{{json input}}
+				</div>
+				<div class="output">
+					{{json output}}
+				</div>
+			</div>
+			{{/with}}
+			{{/if}}
+		</div>
+	</div>
+{{/each}}
+</div>

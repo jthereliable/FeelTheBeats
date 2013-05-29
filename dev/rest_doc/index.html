@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>RESTful API Document JSON Viewer</title>
+	<link rel="stylesheet/less" type="text/css" href="rest_doc.less" />
+	<link rel="stylesheet/less" type="text/css" href="reset.less" />
+	<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/less.js/1.3.3/less.min.js"></script>
+</head>
+<body>
+	<div class="container">
+		<div class="left_column">
+			<div class="column_container">
+				<textarea id="json_doc" wrap="off"></textarea>
+			</div>
+		</div>
+		<div class="right_column">
+			<div class="column_container" id="rest_doc"></div>
+		</div>
+		<div style="clear:both"></div>
+	</div>
+	
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+	<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.0-rc.4/handlebars.min.js"></script>
+	<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/async/0.2.7/async.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$(document).on("click", ".method > .name", function() {
+				$(this).parent().children(".collapsible").slideToggle();
+			});
+			
+			$("textarea").on("keydown", function(event) {
+				var start = this.selectionStart;
+				var end = this.selectionEnd;
+				var val;
+				if(event.keyCode === 9)
+				{
+					val = $(this).val();
+					$(this).val(val.substring(0, start) + "\t" + val.substring(end));
+					this.selectionStart = this.selectionEnd = start + 1;
+					return false;
+				}
+			});
+			$("#json_doc").on("keyup", updateOutput);
+			$("#json_doc").on("keypress", updateOutput);
+			$("#json_doc").on("keydown", updateOutput);
+			
+			var waitTimeout, template;
+			function updateOutput()
+			{
+				clearTimeout(waitTimeout);
+				waitTimeout = setTimeout(renderOutput, 100);
+			}
+			function renderOutput()
+			{
+				try {
+					var json_doc = JSON.parse($("#json_doc").val());
+					if(json_doc.methods)
+					{
+						var i, l=json_doc.methods.length;
+						var methods = [], method;
+						var sort = ["post","get","put","delete"];
+						for(i = 0; i < l; i++)
+						{
+							method = json_doc.methods[i].method.toLowerCase();
+							json_doc.methods[i].method = method;
+							if(methods.indexOf(method)==-1 && sort.indexOf(method)!=-1)
+							{
+								methods.push(method);
+								json_doc.methods[i].sort = sort.indexOf(method);
+							} else {
+								json_doc.methods.splice(i,1);
+								l--;
+							}
+						}
+						json_doc.methods.sort(function(a,b) {
+							return a.sort > b.sort?1:-1;
+						});
+					}
+					var tmpl = template(json_doc);
+					$("#rest_doc").html(tmpl);
+				} catch(e) {
+					console.log(e.toString());
+				}
+			}
+			
+			Handlebars.registerHelper("json", function(obj) {
+				return new Handlebars.SafeString(JSON.stringify(obj, null, "\t").replace(/[\r\n]{1,2}/g,"<br/>").replace(/\t/g,"&nbsp;&nbsp;"));
+			});
+			async.series([
+				function(next) {
+					$.ajax({
+						"url": "doc.json",
+						"dataType": "text"
+					}).done(function(data) {
+						$("#json_doc").val(data);
+						next();
+					});
+				},
+				function(next) {
+					$.ajax({
+						"url": "rest_doc.handlebars",
+						"dataType": "text"
+					}).done(function(data) {
+						template = Handlebars.compile(data);
+						renderOutput();
+						$(".method .collapsible").hide();
+						next();
+					});
+				}
+			]);
+		});
+	</script>
+</body>
+</html>

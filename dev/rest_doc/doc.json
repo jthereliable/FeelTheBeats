@@ -1,40 +1,105 @@
 {
-	"title": "",
-	"path": "",
-	"methods": {
-		"post": {
-			"notes": "",
+	"title": "Path Title",
+	"path": "/some/rest/:api/path/?",
+	"methods": [
+		{
+			"method": "post",
+			"notes": "Note describing post method",
 			"parameters": [
 				{
-					"name": "",
-					"notes": "",
+					"name": "param1",
+					"notes": "Note about param1",
+					"required": true,
+					"example": "14"
+				},
+				{
+					"name": "param2",
+					"notes": "Note about param2",
 					"required": false,
-					"example": ""
+					"example": "'asdf'"
 				}
 			],
 			"success": {
-				"notes": "",
+				"notes": "Success output notes",
 				"example": {
+					"some": "output",
+					"in": [
+						"json",
+						"form"
+					]
 				}
 			},
 			"error": {
-				"notes": "",
+				"notes": "Error output notes",
 				"example": {
+					"error": "error message",
+					"code": 1
 				}
 			},
 			"example": {
-				"notes": "",
-				"input": [
-				],
+				"notes": "Example notes",
+				"input": {
+					"field1": "value1",
+					"field2": "value2"
+				},
 				"output": {
+					"some": "output",
+					"in": [
+						"json",
+						"form"
+					]
 				}
 			}
 		},
-		"get": {
-		},
-		"put": {
-		},
-		"delete": {
+		
+		{
+			"method": "get",
+			"notes": "Note describing get method",
+			"parameters": [
+				{
+					"name": "param1",
+					"notes": "Note about param1",
+					"required": true,
+					"example": "14"
+				},
+				{
+					"name": "param2",
+					"notes": "Note about param2",
+					"required": false,
+					"example": "'asdf'"
+				}
+			],
+			"success": {
+				"notes": "Success output notes",
+				"example": {
+					"some": "output",
+					"in": [
+						"json",
+						"form"
+					]
+				}
+			},
+			"error": {
+				"notes": "Error output notes",
+				"example": {
+					"error": "error message",
+					"code": 1
+				}
+			},
+			"example": {
+				"notes": "Example notes",
+				"input": {
+					"field1": "value1",
+					"field2": "value2"
+				},
+				"output": {
+					"some": "output",
+					"in": [
+						"json",
+						"form"
+					]
+				}
+			}
 		}
-	}
+	]
 }
