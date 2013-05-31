@@ -1,21 +1,16 @@
 {
-	"title": "User Registration",
-	"path": "/auth/register/?",
+	"title": "User Password Recovery",
+	"path": "/auth/recover/?",
 	"methods": [
 		{
 			"method": "post",
-			"notes": "Create a new user.",
+			"notes": "Request password recovery.",
 			"parameters": [
 				{
 					"name": "email",
 					"notes": "User email",
 					"required": true,
 					"example": "abc@xyz.com"
-				},
-				{
-					"name": "password",
-					"notes": "User password. Minimum length of 5 characters.",
-					"required": true
 				},
 				{
 					"name": "recaptcha_response",
@@ -44,8 +39,8 @@
 			}
 		},
 		{
-			"method": "get",
-			"notes": "Verify user registration.",
+			"method": "put",
+			"notes": "Change password.",
 			"parameters": [
 				{
 					"name": "email",
@@ -54,35 +49,14 @@
 					"example": "abc@xyz.com"
 				},
 				{
-					"name": "code",
-					"notes": "Registration verification code",
+					"name": "password",
+					"notes": "New user password. Minimum length of 5 characters.",
 					"required": true
-				}
-			],
-			"success": {
-				"notes": "Success output notes",
-				"example": {
-					"success": true
-				}
-			},
-			"error": {
-				"notes": "Error output notes",
-				"example": {
-					"success": false,
-					"error": "error message",
-					"code": 1
-				}
-			}
-		},
-		{
-			"method": "put",
-			"notes": "Resend user registration verification code.",
-			"parameters": [
+				},
 				{
-					"name": "email",
-					"notes": "User email",
-					"required": true,
-					"example": "abc@xyz.com"
+					"name": "code",
+					"notes": "Password recovery code.",
+					"required": true
 				},
 				{
 					"name": "recaptcha_response",

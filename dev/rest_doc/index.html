@@ -94,7 +94,7 @@
 					window.location.hash = "#";
 				}
 				$.ajax({
-					"url": doc,
+					"url": doc + "?"+Math.random(),
 					"dataType": "text"
 				}).done(function(data) {
 					$("#json_doc").val(data);

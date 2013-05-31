@@ -14,7 +14,7 @@
 				},
 				{
 					"name": "password",
-					"notes": "Note about param2",
+					"notes": "User password",
 					"required": true
 				}
 			],
