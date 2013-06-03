@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jun 03, 2013 at 05:54 PM
+-- Generation Time: Jun 03, 2013 at 07:50 PM
 -- Server version: 5.5.31-0ubuntu0.13.04.1
 -- PHP Version: 5.4.9-4ubuntu2
 
@@ -48,6 +48,7 @@ CREATE TABLE IF NOT EXISTS `Badges` (
   `name` varchar(64) NOT NULL,
   `image` varchar(255) NOT NULL,
   `description` text NOT NULL,
+  `owned` int(10) unsigned NOT NULL,
   `archived` tinyint(1) NOT NULL DEFAULT '0',
   `conditions` tinytext NOT NULL COMMENT 'JSON of conditions',
   PRIMARY KEY (`id`),
@@ -68,6 +69,10 @@ CREATE TABLE IF NOT EXISTS `Charts` (
   `name` varchar(64) NOT NULL,
   `url` varchar(255) NOT NULL,
   `order` tinyint(3) unsigned NOT NULL COMMENT 'Sorting order of the chart',
+  `rating_mod_difficulty` decimal(5,3) NOT NULL,
+  `rating_mod_quality` decimal(5,3) NOT NULL,
+  `rating_user_difficulty` decimal(5,3) NOT NULL,
+  `rating_user_quality` decimal(5,3) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `sid` (`sid`),
   KEY `uid` (`uid`)
@@ -117,7 +122,7 @@ CREATE TABLE IF NOT EXISTS `frm_Forums` (
   PRIMARY KEY (`fid`),
   KEY `category` (`category`),
   KEY `last_post` (`last_post`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=14 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=15 ;
 
 --
 -- RELATIONS FOR TABLE `frm_Forums`:
@@ -144,7 +149,8 @@ INSERT INTO `frm_Forums` (`fid`, `category`, `name`, `description`, `last_post`,
 (10, 2, 'Musician''s Chat', '', NULL, 0, 0, 0, 0, 0),
 (11, 2, 'Mod''s Chat', '', NULL, 2, 2, 0, 0, 0),
 (12, 2, 'Request Forum', '', NULL, 0, 0, 0, 0, 0),
-(13, 2, 'Song Comments', '', NULL, 0, 4, 0, 0, 0);
+(13, 2, 'Song Comments', '', NULL, 0, 4, 0, 0, 0),
+(14, 2, 'Tournaments', '', NULL, 0, 4, 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -180,6 +186,25 @@ CREATE TABLE IF NOT EXISTS `frm_Posts` (
 --       `Users` -> `uid`
 --
 
+--
+-- Triggers `frm_Posts`
+--
+DROP TRIGGER IF EXISTS `Update frm_Forums last_post and frm_Topics posts`;
+DELIMITER //
+CREATE TRIGGER `Update frm_Forums last_post and frm_Topics posts` AFTER INSERT ON `frm_Posts`
+ FOR EACH ROW BEGIN
+UPDATE frm_Forums SET last_post=NEW.pid WHERE fid=(SELECT fid FROM frm_Topics WHERE tid=NEW.tid);
+UPDATE frm_Topics SET posts=posts+1 WHERE tid=NEW.tid;
+END
+//
+DELIMITER ;
+DROP TRIGGER IF EXISTS `Update frm_Topics posts`;
+DELIMITER //
+CREATE TRIGGER `Update frm_Topics posts` AFTER DELETE ON `frm_Posts`
+ FOR EACH ROW UPDATE frm_Topics SET posts=posts-1 WHERE tid=OLD.tid
+//
+DELIMITER ;
+
 -- --------------------------------------------------------
 
 --
@@ -195,7 +220,7 @@ CREATE TABLE IF NOT EXISTS `frm_Topics` (
   `locked` tinyint(1) NOT NULL DEFAULT '0',
   `stickied` tinyint(1) NOT NULL DEFAULT '0',
   `views` int(11) NOT NULL DEFAULT '0',
-  `replies` int(11) NOT NULL DEFAULT '0',
+  `posts` int(11) NOT NULL DEFAULT '0',
   `date_posted` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `date_replied` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `moved_from` int(11) unsigned DEFAULT NULL COMMENT 'Forum ID moved from',
@@ -274,9 +299,17 @@ CREATE TABLE IF NOT EXISTS `Groups` (
   `gid` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
   `description` text NOT NULL,
+  `owner` int(10) unsigned NOT NULL,
   `date_formed` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`gid`)
+  PRIMARY KEY (`gid`),
+  KEY `owner` (`owner`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--
+-- RELATIONS FOR TABLE `Groups`:
+--   `owner`
+--       `Users` -> `uid`
+--
 
 -- --------------------------------------------------------
 
@@ -295,16 +328,10 @@ CREATE TABLE IF NOT EXISTS `Songs` (
   `image` varchar(255) NOT NULL,
   `genres` bit(32) NOT NULL COMMENT 'Bit map representing genre of song',
   `topic_id` int(11) unsigned NOT NULL COMMENT 'Song Comments Topic ID',
-  `rating_mod_score_total` int(10) unsigned NOT NULL,
-  `rating_mod_difficulty_total` int(10) unsigned NOT NULL,
-  `rating_mod_count` int(10) unsigned NOT NULL,
-  `rating_mod_score` decimal(5,3) NOT NULL,
   `rating_mod_difficulty` decimal(5,3) NOT NULL,
-  `rating_user_score_total` int(10) unsigned NOT NULL,
-  `rating_user_difficulty_total` int(10) unsigned NOT NULL,
-  `rating_user_count` int(10) unsigned NOT NULL,
-  `rating_user_score` decimal(5,3) NOT NULL,
+  `rating_mod_quality` decimal(5,3) NOT NULL,
   `rating_user_difficulty` decimal(5,3) NOT NULL,
+  `rating_user_quality` decimal(5,3) NOT NULL,
   `approved` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`sid`),
   KEY `owner` (`owner`),
@@ -314,12 +341,42 @@ CREATE TABLE IF NOT EXISTS `Songs` (
 
 --
 -- RELATIONS FOR TABLE `Songs`:
---   `topic_id`
---       `frm_Posts` -> `tid`
 --   `artist`
 --       `Artists` -> `id`
 --   `owner`
 --       `Users` -> `uid`
+--   `topic_id`
+--       `frm_Posts` -> `tid`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `Tournaments`
+--
+
+DROP TABLE IF EXISTS `Tournaments`;
+CREATE TABLE IF NOT EXISTS `Tournaments` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `song_id` int(10) unsigned NOT NULL,
+  `topic_id` int(10) unsigned NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `description` text NOT NULL,
+  `scoring_criteria` varchar(255) NOT NULL,
+  `date_start` datetime NOT NULL,
+  `date_end` datetime NOT NULL,
+  `archived` tinyint(1) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `topic_id` (`topic_id`),
+  KEY `song_id` (`song_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+--
+-- RELATIONS FOR TABLE `Tournaments`:
+--   `topic_id`
+--       `Tournaments` -> `id`
+--   `song_id`
+--       `Songs` -> `sid`
 --
 
 -- --------------------------------------------------------
@@ -339,8 +396,6 @@ CREATE TABLE IF NOT EXISTS `Users` (
   `points` bigint(20) unsigned NOT NULL DEFAULT '0',
   `experience` bigint(20) unsigned NOT NULL DEFAULT '0',
   `mod_level` tinyint(3) unsigned NOT NULL DEFAULT '0',
-  `mod_reputation` smallint(5) unsigned NOT NULL DEFAULT '0',
-  `mod_rating` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT 'Min -20, Max +10',
   `mod_points` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT 'Points to give to other people',
   `charter_level` tinyint(3) unsigned NOT NULL DEFAULT '1',
   `ban_level` tinyint(3) unsigned NOT NULL DEFAULT '0',
@@ -385,12 +440,25 @@ ALTER TABLE `frm_Topics`
   ADD CONSTRAINT `frm_Topics_ibfk_4` FOREIGN KEY (`owner`) REFERENCES `Users` (`uid`) ON DELETE SET NULL;
 
 --
+-- Constraints for table `Groups`
+--
+ALTER TABLE `Groups`
+  ADD CONSTRAINT `Groups_ibfk_1` FOREIGN KEY (`owner`) REFERENCES `Users` (`uid`);
+
+--
 -- Constraints for table `Songs`
 --
 ALTER TABLE `Songs`
-  ADD CONSTRAINT `Songs_ibfk_3` FOREIGN KEY (`topic_id`) REFERENCES `frm_Posts` (`tid`),
   ADD CONSTRAINT `Songs_ibfk_1` FOREIGN KEY (`artist`) REFERENCES `Artists` (`id`) ON DELETE SET NULL,
-  ADD CONSTRAINT `Songs_ibfk_2` FOREIGN KEY (`owner`) REFERENCES `Users` (`uid`) ON DELETE SET NULL;
+  ADD CONSTRAINT `Songs_ibfk_2` FOREIGN KEY (`owner`) REFERENCES `Users` (`uid`) ON DELETE SET NULL,
+  ADD CONSTRAINT `Songs_ibfk_3` FOREIGN KEY (`topic_id`) REFERENCES `frm_Posts` (`tid`);
+
+--
+-- Constraints for table `Tournaments`
+--
+ALTER TABLE `Tournaments`
+  ADD CONSTRAINT `Tournaments_ibfk_2` FOREIGN KEY (`topic_id`) REFERENCES `Tournaments` (`id`),
+  ADD CONSTRAINT `Tournaments_ibfk_1` FOREIGN KEY (`song_id`) REFERENCES `Songs` (`sid`);
 
 --
 -- Constraints for table `Users`
