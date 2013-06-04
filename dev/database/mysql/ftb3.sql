@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jun 03, 2013 at 07:50 PM
+-- Generation Time: Jun 03, 2013 at 08:34 PM
 -- Server version: 5.5.31-0ubuntu0.13.04.1
 -- PHP Version: 5.4.9-4ubuntu2
 
@@ -291,6 +291,29 @@ INSERT INTO `Genres` (`id`, `name`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `GroupMembers`
+--
+
+DROP TABLE IF EXISTS `GroupMembers`;
+CREATE TABLE IF NOT EXISTS `GroupMembers` (
+  `uid` int(10) unsigned NOT NULL,
+  `gid` int(10) unsigned NOT NULL,
+  `position` enum('member','moderator','administrator') NOT NULL DEFAULT 'member',
+  PRIMARY KEY (`uid`),
+  KEY `gid` (`gid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- RELATIONS FOR TABLE `GroupMembers`:
+--   `gid`
+--       `Groups` -> `gid`
+--   `uid`
+--       `Users` -> `uid`
+--
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `Groups`
 --
 
@@ -302,6 +325,7 @@ CREATE TABLE IF NOT EXISTS `Groups` (
   `owner` int(10) unsigned NOT NULL,
   `date_formed` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`gid`),
+  UNIQUE KEY `name` (`name`),
   KEY `owner` (`owner`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
@@ -363,6 +387,7 @@ CREATE TABLE IF NOT EXISTS `Tournaments` (
   `name` varchar(255) NOT NULL,
   `description` text NOT NULL,
   `scoring_criteria` varchar(255) NOT NULL,
+  `settings` text NOT NULL,
   `date_start` datetime NOT NULL,
   `date_end` datetime NOT NULL,
   `archived` tinyint(1) NOT NULL DEFAULT '0',
@@ -373,10 +398,10 @@ CREATE TABLE IF NOT EXISTS `Tournaments` (
 
 --
 -- RELATIONS FOR TABLE `Tournaments`:
---   `topic_id`
---       `Tournaments` -> `id`
 --   `song_id`
 --       `Songs` -> `sid`
+--   `topic_id`
+--       `Tournaments` -> `id`
 --
 
 -- --------------------------------------------------------
@@ -392,25 +417,17 @@ CREATE TABLE IF NOT EXISTS `Users` (
   `password` text NOT NULL,
   `name` varchar(32) NOT NULL,
   `tier` tinyint(3) unsigned NOT NULL DEFAULT '0',
-  `group_id` int(10) unsigned DEFAULT NULL,
   `points` bigint(20) unsigned NOT NULL DEFAULT '0',
   `experience` bigint(20) unsigned NOT NULL DEFAULT '0',
   `mod_level` tinyint(3) unsigned NOT NULL DEFAULT '0',
-  `mod_points` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT 'Points to give to other people',
   `charter_level` tinyint(3) unsigned NOT NULL DEFAULT '1',
   `ban_level` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `ban_until` timestamp NULL DEFAULT NULL,
   `date_join` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `date_login` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`uid`),
-  KEY `group_id` (`group_id`)
+  UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
---
--- RELATIONS FOR TABLE `Users`:
---   `group_id`
---       `Groups` -> `gid`
---
 
 --
 -- Constraints for dumped tables
@@ -440,6 +457,13 @@ ALTER TABLE `frm_Topics`
   ADD CONSTRAINT `frm_Topics_ibfk_4` FOREIGN KEY (`owner`) REFERENCES `Users` (`uid`) ON DELETE SET NULL;
 
 --
+-- Constraints for table `GroupMembers`
+--
+ALTER TABLE `GroupMembers`
+  ADD CONSTRAINT `GroupMembers_ibfk_2` FOREIGN KEY (`gid`) REFERENCES `Groups` (`gid`) ON DELETE CASCADE,
+  ADD CONSTRAINT `GroupMembers_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`);
+
+--
 -- Constraints for table `Groups`
 --
 ALTER TABLE `Groups`
@@ -457,14 +481,8 @@ ALTER TABLE `Songs`
 -- Constraints for table `Tournaments`
 --
 ALTER TABLE `Tournaments`
-  ADD CONSTRAINT `Tournaments_ibfk_2` FOREIGN KEY (`topic_id`) REFERENCES `Tournaments` (`id`),
-  ADD CONSTRAINT `Tournaments_ibfk_1` FOREIGN KEY (`song_id`) REFERENCES `Songs` (`sid`);
-
---
--- Constraints for table `Users`
---
-ALTER TABLE `Users`
-  ADD CONSTRAINT `Users_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `Groups` (`gid`) ON DELETE SET NULL;
+  ADD CONSTRAINT `Tournaments_ibfk_1` FOREIGN KEY (`song_id`) REFERENCES `Songs` (`sid`),
+  ADD CONSTRAINT `Tournaments_ibfk_2` FOREIGN KEY (`topic_id`) REFERENCES `Tournaments` (`id`);
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
