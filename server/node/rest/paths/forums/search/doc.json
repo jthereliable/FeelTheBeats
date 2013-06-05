@@ -1,0 +1,72 @@
+{
+	"title": "Search forums for a post",
+	"path": "/forums/search/?",
+	"methods": [
+		{
+			"method": "get",
+			"notes": "Get list of charts based on search parameters. (Have sort fields?)",
+			"parameters": [
+				{
+					"name": "token",
+					"notes": "User token."
+				},
+				{
+					"name": "text",
+					"notes": "Search posts based on text"
+				},
+				{
+					"name": "title",
+					"notes": "Search posts based on topic title"
+				},
+				{
+					"name": "owner",
+					"notes": "Search charts based on owner"
+				},
+				{
+					"name": "order",
+					"notes": "Sort by field",
+					"example": "'relevance', 'date_posted'"
+				},
+				{
+					"name": "sort",
+					"notes": "Sorting direction",
+					"example": "'asc' or 'desc'"
+				},
+				{
+					"name": "offset",
+					"notes": "Search offset"
+				},
+				{
+					"name": "limit",
+					"notes": "Search limit (max 25)"
+				}
+			],
+			"success": {
+				"notes": "Success output notes",
+				"example": {
+					"success": true,
+					"forums": [
+						{
+							"pid": 1,
+							"text": "some text (maybe only a snippet?)",
+							"owner": {
+								"uid": 1,
+								"name": "Some name"
+							},
+							"date_posted": "Some Date"
+						},
+						"..."
+					]
+				}
+			},
+			"error": {
+				"notes": "Error output notes",
+				"example": {
+					"success": false,
+					"error": "error message",
+					"code": 1
+				}
+			}
+		}
+	]
+}

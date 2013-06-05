@@ -1,0 +1,54 @@
+{
+	"title": "Retrieve a list of forums",
+	"path": "/forums/?",
+	"methods": [
+		{
+			"method": "get",
+			"notes": "Get list of all forums.",
+			"parameters": [
+				{
+					"name": "token",
+					"notes": "User token."
+				}
+			],
+			"success": {
+				"notes": "Success output notes",
+				"example": {
+					"success": true,
+					"forums": [
+						{
+							"fid": 1,
+							"category": {
+								"id": 1,
+								"name": "Category Name"
+							},
+							"name": "Forum Name",
+							"description": "Forum description",
+							"last_post": {
+								"pid": 1,
+								"topic": {
+									"tid": 1,
+									"title": "Some title"
+								},
+								"owner": {
+									"uid": 1,
+									"name": "Some name"
+								},
+								"date_posted": "Some Date"
+							}
+						},
+						"..."
+					]
+				}
+			},
+			"error": {
+				"notes": "Error output notes",
+				"example": {
+					"success": false,
+					"error": "error message",
+					"code": 1
+				}
+			}
+		}
+	]
+}

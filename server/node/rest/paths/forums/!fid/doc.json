@@ -1,0 +1,94 @@
+{
+	"title": "Retrieve a list of topics",
+	"path": "/forums/!fid/?",
+	"methods": [
+		{
+			"method": "post",
+			"notes": "Create new topic.",
+			"parameters": [
+				{
+					"name": "token",
+					"notes": "User token.",
+					"required": true
+				},
+				{
+					"name": "title",
+					"notes": "Topic title.",
+					"required": true
+				},
+				{
+					"name": "text",
+					"notes": "Post text.",
+					"required": true
+				}
+			],
+			"success": {
+				"notes": "Success output notes",
+				"example": {
+					"success": true,
+					"tid": 1
+				}
+			},
+			"error": {
+				"notes": "Error output notes",
+				"example": {
+					"success": false,
+					"error": "error message",
+					"code": 1
+				}
+			}
+		},
+		{
+			"method": "get",
+			"notes": "Get list of topics in forum.",
+			"parameters": [
+				{
+					"name": "token",
+					"notes": "User token."
+				},
+				{
+					"name": "offset",
+					"notes": "Search offset"
+				},
+				{
+					"name": "limit",
+					"notes": "Search limit (max 25)"
+				}
+			],
+			"success": {
+				"notes": "Success output notes",
+				"example": {
+					"success": true,
+					"topics": [
+						{
+							"tid": 1,
+							"title": "Some title",
+							"owner": {
+								"uid": 1,
+								"name": "SomeName"
+							},
+							"locked": false,
+							"stickied": false,
+							"views": 1,
+							"posts": 1,
+							"date_posted": "Some Date",
+							"date_replied": "Some Date",
+							"moved": {
+								"from": 1,
+								"date": "Some Date"
+							}
+						}
+					]
+				}
+			},
+			"error": {
+				"notes": "Error output notes",
+				"example": {
+					"success": false,
+					"error": "error message",
+					"code": 1
+				}
+			}
+		}
+	]
+}
