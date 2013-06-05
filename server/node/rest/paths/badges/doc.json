@@ -20,21 +20,6 @@
 					"name": "name",
 					"notes": "Badge name",
 					"required": true
-				},
-				{
-					"name": "description",
-					"notes": "Badge description",
-					"required": true
-				},
-				{
-					"name": "conditions",
-					"notes": "Badge conditions (JSON formatted? should this contain 'hidden'?)",
-					"required": true
-				},
-				{
-					"name": "image",
-					"notes": "Badge image file",
-					"required": false
 				}
 			],
 			"success": {

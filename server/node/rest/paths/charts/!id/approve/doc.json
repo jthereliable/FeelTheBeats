@@ -1,29 +1,19 @@
 {
-	"title": "Retrieve chart information",
-	"path": "/charts/!id/?",
+	"title": "Retrieve chart approval",
+	"path": "/charts/!id/approve/?",
 	"methods": [
 		{
 			"method": "get",
-			"notes": "Get chart information",
+			"notes": "Get chart approval information",
 			"parameters": [
 			],
 			"success": {
 				"notes": "Success output notes",
 				"example": {
 					"success": true,
-					"name": "Some Name",
-					"owner": {
-						"uid": 1,
-						"name": "Name",
-						"image": "Some image"
-					},
-					"song": {
-						"sid": 1,
-						"name": "Name",
-						"image": "Some image",
-						"url": "some url"
-					},
-					"more": "properties"
+					"approved_owner": true,
+					"approved_song": true,
+					"approved_mod": false
 				}
 			},
 			"error": {
@@ -37,7 +27,7 @@
 		},
 		{
 			"method": "put",
-			"notes": "Update chart details",
+			"notes": "Set chart approval status",
 			"parameters": [
 				{
 					"name": "token",
@@ -45,23 +35,15 @@
 					"required": true
 				},
 				{
-					"name": "owner",
-					"notes": "Chart owner! (pass chart to another user)"
-				},
-				{
-					"name": "name",
-					"notes": "Chart name"
-				},
-				{
-					"name": "description",
-					"notes": "Chart description"
+					"name": "approval",
+					"notes": "Owner and song owner can unapprove if not approved by mod. Mod can unapprove chart entirely. Mod cannot approve chart unless minimum chart quality and number of mod ratings has been passed.",
+					"example": "false (default: true)"
 				}
 			],
 			"success": {
 				"notes": "Success output notes",
 				"example": {
-					"success": true,
-					"id": 1
+					"success": true
 				}
 			},
 			"error": {

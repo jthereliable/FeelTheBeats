@@ -1,0 +1,107 @@
+{
+	"title": "Retrieve song information",
+	"path": "/songs/!sid/?",
+	"methods": [
+		{
+			"method": "get",
+			"notes": "Get song information",
+			"parameters": [
+			],
+			"success": {
+				"notes": "Success output notes",
+				"example": {
+					"success": true,
+					"name": "Some name",
+					"owner": {
+						"uid": 1,
+						"name": "OwnerName",
+						"image": "Owner Image"
+					},
+					"artist": {
+						"id": 1,
+						"name": "Artist Name",
+						"image": "Artist Image",
+						"url": "Artist URL"
+					},
+					"genres": [
+						"..."
+					],
+					"charts": [
+						"..."
+					],
+					"badges": [
+						"..."
+					],
+					"ratings": {
+						"mod": {
+							"quality": 10,
+							"difficulty": 5
+						},
+						"user": {
+							"quality": 10,
+							"difficulty": 5
+						}
+					}
+					"comments_topic": "Topic ID"
+				}
+			},
+			"error": {
+				"notes": "Error output notes",
+				"example": {
+					"success": false,
+					"error": "error message",
+					"code": 1
+				}
+			}
+		},
+		{
+			"method": "put",
+			"notes": "Update song information",
+			"parameters": [
+				{
+					"name": "token",
+					"notes": "User token.",
+					"required": true
+				},
+				{
+					"name": "name",
+					"notes": "Song name"
+				},
+				{
+					"name": "owner",
+					"notes": "Song owner"
+				},
+				{
+					"name": "artist",
+					"notes": "Song artist"
+				},
+				{
+					"name": "description",
+					"notes": "Song description"
+				},
+				{
+					"name": "genres",
+					"notes": "Song genres"
+				},
+				{
+					"name": "image",
+					"notes": "Song image"
+				}
+			],
+			"success": {
+				"notes": "Success output notes",
+				"example": {
+					"success": true
+				}
+			},
+			"error": {
+				"notes": "Error output notes",
+				"example": {
+					"success": false,
+					"error": "error message",
+					"code": 1
+				}
+			}
+		}
+	]
+}

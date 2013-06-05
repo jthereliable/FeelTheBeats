@@ -59,6 +59,11 @@
 					"name": "image",
 					"notes": "Badge image file",
 					"required": false
+				},
+				{
+					"name": "enabled",
+					"notes": "Badge enabled",
+					"required": false
 				}
 			],
 			"success": {
