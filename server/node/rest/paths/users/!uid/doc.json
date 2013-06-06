@@ -1,0 +1,39 @@
+{
+	"title": "Retrieve user information",
+	"path": "/users/!uid/?",
+	"methods": [
+		{
+			"method": "get",
+			"notes": "Get user information.",
+			"parameters": [
+			],
+			"success": {
+				"notes": "Success output notes",
+				"example": {
+					"success": true,
+					"name": "SomeName",
+					"tier": 1,
+					"points": 1,
+					"experience": 1,
+					"mod_level": 1,
+					"charter_level": 1,
+					"ban_level": 1,
+					"date_join": "SomeDate",
+					"date_login": "SomeDate",
+					"ratings": {
+						"reputation": 10,
+						"rating": -1
+					}
+				}
+			},
+			"error": {
+				"notes": "Error output notes",
+				"example": {
+					"success": false,
+					"error": "error message",
+					"code": 1
+				}
+			}
+		}
+	]
+}

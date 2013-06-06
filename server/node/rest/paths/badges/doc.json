@@ -51,6 +51,10 @@
 					"notes": "Search badges based on name"
 				},
 				{
+					"name": "owner",
+					"notes": "Search badges based on owner"
+				},
+				{
 					"name": "conditions",
 					"notes": "Search badges based on conditions"
 				},
