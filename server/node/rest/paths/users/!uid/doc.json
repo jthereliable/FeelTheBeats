@@ -12,6 +12,7 @@
 				"example": {
 					"success": true,
 					"name": "SomeName",
+					"image": "SomeImage",
 					"tier": 1,
 					"points": 1,
 					"experience": 1,

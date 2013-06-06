@@ -1,0 +1,57 @@
+{
+	"title": "Retrieve user's follows",
+	"path": "/users/!uid/follows/?",
+	"methods": [
+		{
+			"method": "get",
+			"notes": "Get list of user's follows based on search parameters.",
+			"parameters": [
+				{
+					"name": "name",
+					"notes": "Search followers based on name"
+				},
+				{
+					"name": "order",
+					"notes": "Sort by field",
+					"example": "'name'"
+				},
+				{
+					"name": "sort",
+					"notes": "Sorting direction",
+					"example": "'asc' or 'desc'"
+				},
+				{
+					"name": "offset",
+					"notes": "Search offset"
+				},
+				{
+					"name": "limit",
+					"notes": "Search limit (max 25)"
+				}
+			],
+			"success": {
+				"notes": "Success output notes",
+				"example": {
+					"success": true,
+					"follows": [
+						{
+							"uid": 1,
+							"name": "SomeName",
+							"image": "SomeImage",
+							"tier": 1
+						},
+						"..."
+					]
+				}
+			},
+			"error": {
+				"notes": "Error output notes",
+				"example": {
+					"success": false,
+					"error": "error message",
+					"code": 1
+				}
+			}
+		}
+	]
+}
