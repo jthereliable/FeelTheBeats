@@ -59,7 +59,7 @@
 				"notes": "Success output notes",
 				"example": {
 					"success": true,
-					"topics": [
+					"posts": [
 						{
 							"pid": 1,
 							"text": "Some Text",
@@ -79,7 +79,8 @@
 							"rating": 25,
 							"deleted": false
 						}
-					]
+					],
+					"count": 1
 				}
 			},
 			"error": {

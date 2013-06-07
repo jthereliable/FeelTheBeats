@@ -74,7 +74,8 @@
 					"success": true,
 					"songs": [
 						"..."
-					]
+					],
+					"count": 1
 				}
 			},
 			"error": {

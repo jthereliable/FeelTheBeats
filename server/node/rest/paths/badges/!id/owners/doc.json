@@ -49,9 +49,10 @@
 				"notes": "Success output notes",
 				"example": {
 					"success": true,
-					"owners": [
+					"users": [
 						"..."
-					]
+					],
+					"count": 1
 				}
 			},
 			"error": {

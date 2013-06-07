@@ -1,0 +1,95 @@
+{
+	"title": "Retrieve artist information",
+	"path": "/artists/!id/?",
+	"methods": [
+		{
+			"method": "get",
+			"notes": "Get artist information",
+			"parameters": [
+			],
+			"success": {
+				"notes": "Success output notes",
+				"example": {
+					"success": true,
+					"name": "Artist Name",
+					"url": "Artist Webpage",
+					"description": "Artist description",
+					"user": {
+						"uid": 1,
+						"name": "SomeName"
+					}
+				}
+			},
+			"error": {
+				"notes": "Error output notes",
+				"example": {
+					"success": false,
+					"error": "error message",
+					"code": 1
+				}
+			}
+		},
+		{
+			"method": "put",
+			"notes": "Edit artist information. (Only moderators and users linked to artist field can perform this action.)",
+			"parameters": [
+				{
+					"name": "token",
+					"notes": "User token.",
+					"required": true
+				},
+				{
+					"name": "name",
+					"notes": "Artist name."
+				},
+				{
+					"name": "url",
+					"notes": "Artist URL."
+				},
+				{
+					"name": "description",
+					"notes": "Artist description."
+				}
+			],
+			"success": {
+				"notes": "Success output notes",
+				"example": {
+					"success": true
+				}
+			},
+			"error": {
+				"notes": "Error output notes",
+				"example": {
+					"success": false,
+					"error": "error message",
+					"code": 1
+				}
+			}
+		},
+		{
+			"method": "delete",
+			"notes": "Delete artist. (Only moderators can perform this action.)",
+			"parameters": [
+				{
+					"name": "token",
+					"notes": "User token.",
+					"required": true
+				}
+			],
+			"success": {
+				"notes": "Success output notes",
+				"example": {
+					"success": true
+				}
+			},
+			"error": {
+				"notes": "Error output notes",
+				"example": {
+					"success": false,
+					"error": "error message",
+					"code": 1
+				}
+			}
+		}
+	]
+}

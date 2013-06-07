@@ -51,7 +51,8 @@
 					"success": true,
 					"users": [
 						"..."
-					]
+					],
+					"count": 1
 				}
 			},
 			"error": {

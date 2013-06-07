@@ -78,7 +78,8 @@
 								"date": "Some Date"
 							}
 						}
-					]
+					],
+					"count": 1
 				}
 			},
 			"error": {

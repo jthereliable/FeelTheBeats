@@ -83,7 +83,8 @@
 					"success": true,
 					"badges": [
 						"..."
-					]
+					],
+					"count": 1
 				}
 			},
 			"error": {

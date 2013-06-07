@@ -70,7 +70,8 @@
 					"success": true,
 					"groups": [
 						"..."
-					]
+					],
+					"count": 1
 				}
 			},
 			"error": {

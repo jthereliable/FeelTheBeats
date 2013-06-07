@@ -56,7 +56,7 @@
 					"code": 1
 				}
 			}
-		}
+		},
 		{
 			"method": "delete",
 			"notes": "Delete request to join group. (Only group moderators can perform these actions.)",
