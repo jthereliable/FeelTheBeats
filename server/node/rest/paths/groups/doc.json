@@ -1,0 +1,86 @@
+{
+	"title": "Retrieve groups",
+	"path": "/groups/?",
+	"methods": [
+		{
+			"method": "post",
+			"notes": "Create new group. (Only Tier 3 users not in a group can create groups.)",
+			"parameters": [
+				{
+					"name": "token",
+					"notes": "User token.",
+					"required": true
+				},
+				{
+					"name": "name",
+					"notes": "Group name",
+					"required": true
+				}
+			],
+			"success": {
+				"notes": "Success output notes",
+				"example": {
+					"success": true,
+					"gid": 1
+				}
+			},
+			"error": {
+				"notes": "Error output notes",
+				"example": {
+					"success": false,
+					"error": "error message",
+					"code": 1
+				}
+			}
+		},
+		{
+			"method": "get",
+			"notes": "Get list of groups based on search parameters.",
+			"parameters": [
+				{
+					"name": "owner",
+					"notes": "Search groups based on owner"
+				},
+				{
+					"name": "name",
+					"notes": "Search groups based on name"
+				},
+				{
+					"name": "order",
+					"notes": "Sort by field",
+					"example": "'name', 'members', 'gid'"
+				},
+				{
+					"name": "sort",
+					"notes": "Sorting direction",
+					"example": "'asc' or 'desc'"
+				},
+				{
+					"name": "offset",
+					"notes": "Search offset"
+				},
+				{
+					"name": "limit",
+					"notes": "Search limit (max 25)"
+				}
+			],
+			"success": {
+				"notes": "Success output notes",
+				"example": {
+					"success": true,
+					"groups": [
+						"..."
+					]
+				}
+			},
+			"error": {
+				"notes": "Error output notes",
+				"example": {
+					"success": false,
+					"error": "error message",
+					"code": 1
+				}
+			}
+		}
+	]
+}

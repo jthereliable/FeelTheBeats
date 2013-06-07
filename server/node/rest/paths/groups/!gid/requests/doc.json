@@ -1,26 +1,35 @@
 {
-	"title": "Retrieve a list of users",
-	"path": "/users/?",
+	"title": "Retrieve list of group requests",
+	"path": "/groups/!gid/requests/?",
 	"methods": [
 		{
 			"method": "get",
-			"notes": "Get list of users based on search parameters.",
+			"notes": "Get list of group requests based on search parameters. (Only group moderators can perform these actions.)",
 			"parameters": [
 				{
+					"name": "token",
+					"notes": "User token.",
+					"required": true
+				},
+				{
 					"name": "name",
-					"notes": "Search user based on name"
+					"notes": "Search group member based on name"
 				},
 				{
 					"name": "tier",
-					"notes": "Search user based on tier"
+					"notes": "Search group member based on tier"
 				},
 				{
 					"name": "mod_level",
-					"notes": "Search user based on mod level"
+					"notes": "Search group member based on mod level"
 				},
 				{
 					"name": "charter_level",
-					"notes": "Search user based on charter level"
+					"notes": "Search group member based on charter level"
+				},
+				{
+					"name": "blocked",
+					"notes": "Search group requests based on blocked status"
 				},
 				{
 					"name": "order",

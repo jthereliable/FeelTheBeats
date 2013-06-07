@@ -24,6 +24,11 @@
 					"ratings": {
 						"reputation": 10,
 						"rating": -1
+					},
+					"group": {
+						"gid": 1,
+						"name": "Group Name",
+						"image": "Some Image"
 					}
 				}
 			},

@@ -1,53 +1,15 @@
 {
-	"title": "Retrieve group information",
-	"path": "/groups/!gid/?",
+	"title": "Update group requests information",
+	"path": "/groups/!gid/requests/!uid/?",
 	"methods": [
 		{
-			"method": "get",
-			"notes": "Get group information.",
-			"parameters": [
-			],
-			"success": {
-				"notes": "Success output notes",
-				"example": {
-					"success": true,
-					"name": "GroupName",
-					"image": "Some Image",
-					"description": "Some description",
-					"owner": {
-						"uid": 1,
-						"name": "SomeName",
-						"image": "Some Image"
-					},
-					"members": 10,
-					"date_formed": "Some Date"
-				}
-			},
-			"error": {
-				"notes": "Error output notes",
-				"example": {
-					"success": false,
-					"error": "error message",
-					"code": 1
-				}
-			}
-		},
-		{
-			"method": "put",
-			"notes": "Update group information. (Only group administrators can perform these actions.)",
+			"method": "post",
+			"notes": "Add user to the group. User's tier must satisfy restrictions. (Only group moderators can perform these actions.)",
 			"parameters": [
 				{
 					"name": "token",
 					"notes": "User token.",
 					"required": true
-				},
-				{
-					"name": "description",
-					"notes": "Group description"
-				},
-				{
-					"name": "image",
-					"notes": "Group image"
 				}
 			],
 			"success": {
@@ -66,8 +28,38 @@
 			}
 		},
 		{
+			"method": "put",
+			"notes": "Block request to join group. No new requests can be made to join the group. (Only group moderators can perform these actions.)",
+			"parameters": [
+				{
+					"name": "token",
+					"notes": "User token.",
+					"required": true
+				},
+				{
+					"name": "block",
+					"notes": "User token.",
+					"example": "false (Default: true)"
+				}
+			],
+			"success": {
+				"notes": "Success output notes",
+				"example": {
+					"success": true
+				}
+			},
+			"error": {
+				"notes": "Error output notes",
+				"example": {
+					"success": false,
+					"error": "error message",
+					"code": 1
+				}
+			}
+		}
+		{
 			"method": "delete",
-			"notes": "Disband group. (Only group owner can perform this action.)",
+			"notes": "Delete request to join group. (Only group moderators can perform these actions.)",
 			"parameters": [
 				{
 					"name": "token",
