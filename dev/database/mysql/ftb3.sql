@@ -3,9 +3,9 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jun 03, 2013 at 08:34 PM
+-- Generation Time: Jun 12, 2013 at 06:38 PM
 -- Server version: 5.5.31-0ubuntu0.13.04.1
--- PHP Version: 5.4.9-4ubuntu2
+-- PHP Version: 5.4.9-4ubuntu2.1
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -29,10 +29,12 @@ SET time_zone = "+00:00";
 DROP TABLE IF EXISTS `Artists`;
 CREATE TABLE IF NOT EXISTS `Artists` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `uid` int(10) unsigned DEFAULT NULL,
   `name` varchar(64) NOT NULL,
   `url` varchar(512) NOT NULL,
-  `text` text NOT NULL,
-  PRIMARY KEY (`id`)
+  `description` text NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uid` (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -49,7 +51,7 @@ CREATE TABLE IF NOT EXISTS `Badges` (
   `image` varchar(255) NOT NULL,
   `description` text NOT NULL,
   `owned` int(10) unsigned NOT NULL,
-  `archived` tinyint(1) NOT NULL DEFAULT '0',
+  `enabled` tinyint(1) NOT NULL DEFAULT '0',
   `conditions` tinytext NOT NULL COMMENT 'JSON of conditions',
   PRIMARY KEY (`id`),
   KEY `sid` (`sid`)
@@ -65,17 +67,29 @@ DROP TABLE IF EXISTS `Charts`;
 CREATE TABLE IF NOT EXISTS `Charts` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `sid` int(10) unsigned NOT NULL COMMENT 'Song ID',
-  `uid` int(10) unsigned NOT NULL COMMENT 'Charter user ID',
+  `owner` int(10) unsigned NOT NULL COMMENT 'Charter user ID',
   `name` varchar(64) NOT NULL,
+  `description` mediumtext NOT NULL,
+  `note_count` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `hold_count` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `mine_count` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `trap_count` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `effect_count` smallint(5) unsigned NOT NULL DEFAULT '0',
+  `keys` tinyint(3) unsigned NOT NULL DEFAULT '7',
   `url` varchar(255) NOT NULL,
   `order` tinyint(3) unsigned NOT NULL COMMENT 'Sorting order of the chart',
+  `plays` int(10) unsigned NOT NULL DEFAULT '0',
   `rating_mod_difficulty` decimal(5,3) NOT NULL,
   `rating_mod_quality` decimal(5,3) NOT NULL,
   `rating_user_difficulty` decimal(5,3) NOT NULL,
   `rating_user_quality` decimal(5,3) NOT NULL,
+  `approved_owner` tinyint(1) NOT NULL DEFAULT '0',
+  `approved_song` tinyint(1) NOT NULL DEFAULT '0',
+  `approved_mod` tinyint(1) NOT NULL DEFAULT '0',
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   KEY `sid` (`sid`),
-  KEY `uid` (`uid`)
+  KEY `owner` (`owner`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 -- --------------------------------------------------------
@@ -125,14 +139,6 @@ CREATE TABLE IF NOT EXISTS `frm_Forums` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=15 ;
 
 --
--- RELATIONS FOR TABLE `frm_Forums`:
---   `last_post`
---       `frm_Posts` -> `pid`
---   `category`
---       `frm_Categories` -> `id`
---
-
---
 -- Dumping data for table `frm_Forums`
 --
 
@@ -175,16 +181,6 @@ CREATE TABLE IF NOT EXISTS `frm_Posts` (
   KEY `owner` (`owner`),
   KEY `editor` (`editor`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
---
--- RELATIONS FOR TABLE `frm_Posts`:
---   `tid`
---       `frm_Topics` -> `tid`
---   `owner`
---       `Users` -> `uid`
---   `editor`
---       `Users` -> `uid`
---
 
 --
 -- Triggers `frm_Posts`
@@ -230,16 +226,6 @@ CREATE TABLE IF NOT EXISTS `frm_Topics` (
   KEY `owner` (`owner`),
   KEY `moved_from` (`moved_from`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
---
--- RELATIONS FOR TABLE `frm_Topics`:
---   `fid`
---       `frm_Forums` -> `fid`
---   `moved_from`
---       `frm_Forums` -> `fid`
---   `owner`
---       `Users` -> `uid`
---
 
 -- --------------------------------------------------------
 
@@ -298,18 +284,26 @@ DROP TABLE IF EXISTS `GroupMembers`;
 CREATE TABLE IF NOT EXISTS `GroupMembers` (
   `uid` int(10) unsigned NOT NULL,
   `gid` int(10) unsigned NOT NULL,
-  `position` enum('member','moderator','administrator') NOT NULL DEFAULT 'member',
+  `position` enum('member','moderator','administrator','owner') NOT NULL DEFAULT 'member',
   PRIMARY KEY (`uid`),
   KEY `gid` (`gid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- RELATIONS FOR TABLE `GroupMembers`:
---   `gid`
---       `Groups` -> `gid`
---   `uid`
---       `Users` -> `uid`
+-- Triggers `GroupMembers`
 --
+DROP TRIGGER IF EXISTS `Update Groups members (+1)`;
+DELIMITER //
+CREATE TRIGGER `Update Groups members (+1)` AFTER INSERT ON `GroupMembers`
+ FOR EACH ROW UPDATE Groups SET members=members+1 WHERE gid=NEW.gid
+//
+DELIMITER ;
+DROP TRIGGER IF EXISTS `Update Groups members (-1)`;
+DELIMITER //
+CREATE TRIGGER `Update Groups members (-1)` AFTER DELETE ON `GroupMembers`
+ FOR EACH ROW UPDATE Groups SET members=members+1 WHERE gid=OLD.gid
+//
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -322,18 +316,14 @@ CREATE TABLE IF NOT EXISTS `Groups` (
   `gid` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
   `description` text NOT NULL,
+  `image` varchar(255) NOT NULL,
   `owner` int(10) unsigned NOT NULL,
+  `members` int(10) unsigned NOT NULL DEFAULT '0',
   `date_formed` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`gid`),
   UNIQUE KEY `name` (`name`),
   KEY `owner` (`owner`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
---
--- RELATIONS FOR TABLE `Groups`:
---   `owner`
---       `Users` -> `uid`
---
 
 -- --------------------------------------------------------
 
@@ -356,22 +346,14 @@ CREATE TABLE IF NOT EXISTS `Songs` (
   `rating_mod_quality` decimal(5,3) NOT NULL,
   `rating_user_difficulty` decimal(5,3) NOT NULL,
   `rating_user_quality` decimal(5,3) NOT NULL,
-  `approved` tinyint(1) NOT NULL DEFAULT '0',
+  `approved_owner` tinyint(1) NOT NULL DEFAULT '0',
+  `approved_mod` tinyint(1) NOT NULL DEFAULT '0',
+  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`sid`),
   KEY `owner` (`owner`),
   KEY `artist` (`artist`),
   KEY `topic_id` (`topic_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
---
--- RELATIONS FOR TABLE `Songs`:
---   `artist`
---       `Artists` -> `id`
---   `owner`
---       `Users` -> `uid`
---   `topic_id`
---       `frm_Posts` -> `tid`
---
 
 -- --------------------------------------------------------
 
@@ -396,14 +378,6 @@ CREATE TABLE IF NOT EXISTS `Tournaments` (
   KEY `song_id` (`song_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
---
--- RELATIONS FOR TABLE `Tournaments`:
---   `song_id`
---       `Songs` -> `sid`
---   `topic_id`
---       `Tournaments` -> `id`
---
-
 -- --------------------------------------------------------
 
 --
@@ -416,6 +390,7 @@ CREATE TABLE IF NOT EXISTS `Users` (
   `email` varchar(255) NOT NULL,
   `password` text NOT NULL,
   `name` varchar(32) NOT NULL,
+  `image` varchar(255) NOT NULL,
   `tier` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `points` bigint(20) unsigned NOT NULL DEFAULT '0',
   `experience` bigint(20) unsigned NOT NULL DEFAULT '0',
@@ -434,11 +409,24 @@ CREATE TABLE IF NOT EXISTS `Users` (
 --
 
 --
+-- Constraints for table `Artists`
+--
+ALTER TABLE `Artists`
+  ADD CONSTRAINT `Artists_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`);
+
+--
+-- Constraints for table `Charts`
+--
+ALTER TABLE `Charts`
+  ADD CONSTRAINT `Charts_ibfk_1` FOREIGN KEY (`sid`) REFERENCES `Songs` (`sid`),
+  ADD CONSTRAINT `Charts_ibfk_2` FOREIGN KEY (`owner`) REFERENCES `Users` (`uid`);
+
+--
 -- Constraints for table `frm_Forums`
 --
 ALTER TABLE `frm_Forums`
-  ADD CONSTRAINT `frm_Forums_ibfk_2` FOREIGN KEY (`last_post`) REFERENCES `frm_Posts` (`pid`) ON DELETE SET NULL ON UPDATE NO ACTION,
-  ADD CONSTRAINT `frm_Forums_ibfk_1` FOREIGN KEY (`category`) REFERENCES `frm_Categories` (`id`);
+  ADD CONSTRAINT `frm_Forums_ibfk_1` FOREIGN KEY (`category`) REFERENCES `frm_Categories` (`id`),
+  ADD CONSTRAINT `frm_Forums_ibfk_2` FOREIGN KEY (`last_post`) REFERENCES `frm_Posts` (`pid`) ON DELETE SET NULL ON UPDATE NO ACTION;
 
 --
 -- Constraints for table `frm_Posts`
@@ -460,8 +448,8 @@ ALTER TABLE `frm_Topics`
 -- Constraints for table `GroupMembers`
 --
 ALTER TABLE `GroupMembers`
-  ADD CONSTRAINT `GroupMembers_ibfk_2` FOREIGN KEY (`gid`) REFERENCES `Groups` (`gid`) ON DELETE CASCADE,
-  ADD CONSTRAINT `GroupMembers_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`);
+  ADD CONSTRAINT `GroupMembers_ibfk_1` FOREIGN KEY (`uid`) REFERENCES `Users` (`uid`),
+  ADD CONSTRAINT `GroupMembers_ibfk_2` FOREIGN KEY (`gid`) REFERENCES `Groups` (`gid`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `Groups`
