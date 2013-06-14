@@ -59,12 +59,16 @@ exports.encrypt = function(data, key, algorithm) {
 	return Buffer(s,'utf8').toString('base64') + exports.hexToBase64(u + c.final('hex'));
 };
 exports.decrypt = function(data, key, algorithm) {
-	var s = Buffer(data.substring(0,CIPHER_SALT_BLOCK_COUNT*4),'base64').toString('utf8');
-	data = data.substring(CIPHER_SALT_BLOCK_COUNT*4);
-	var d = crypto.createDecipher(algorithm, key + s);
-	var u = d.update(exports.base64ToHex(data), 'hex', 'utf8');
-	
-	return u + d.final('utf8');
+	try {
+		var s = Buffer(data.substring(0,CIPHER_SALT_BLOCK_COUNT*4),'base64').toString('utf8');
+		data = data.substring(CIPHER_SALT_BLOCK_COUNT*4);
+		var d = crypto.createDecipher(algorithm, key + s);
+		var u = d.update(exports.base64ToHex(data), 'hex', 'utf8');
+		
+		return u + d.final('utf8');
+	} catch(e) {
+		return null;
+	}
 };
 exports.aes128 = function(data, key) {
 	return exports.encrypt(data, key, 'AES-128-CFB');
