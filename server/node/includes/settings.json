@@ -1,0 +1,50 @@
+{
+	"server": {
+		"environment": "debug",
+		"log": {
+			"path": "/var/log/ftb3/",
+			"level": 5
+		},
+		"rest": {
+			"port": 82
+		},
+		"websocket": {
+			"port": 8000
+		}
+	},
+	
+	"database": {
+		"mysql": {
+		},
+		"mongodb": {
+		}
+	},
+	
+	"storage": {
+		"s3": {
+		}
+	},
+	
+	"email": {
+	},
+	
+	"tokens": {
+		"lifetime": 432000,
+		"seed_path": "/var/node_protected/token_seed.json"
+	},
+	
+	"security": {
+		"recaptcha": {
+		}
+	},
+	
+	"mimetypes": {
+		"images": {
+			"image/gif": "gif",
+			"image/jpeg": "jpg",
+			"image/pjpeg": "jpg",
+			"image/png": "png",
+			"image/tiff": "tif"
+		}
+	}
+}
