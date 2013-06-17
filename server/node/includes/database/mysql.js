@@ -1,52 +1,33 @@
 var mysql			= require("mysql"),
 	settings		= require("settings.json");
 
+var options = settings.database.mysql;
+var pool = mysql.createPool({
+	"host":					options.host,
+	"port":					options.port,
+	"user":					options.user,
+	"password":				options.password,
+	"database":				options.database,
+	"connectionLimit":		options.pool_size,
+	
+	"multipleStatements":	true			// For transactions
+});
+
 exports = module.exports = (function() {
 	// TODO: Update code using new node-mysql pooling
-	
-	
-	/*var options = settings.database.mysql;
-	
-	options.pool = options.pool || 1;
-	options.idle = options.idle || 10000;
-	
-	var pool = generic_pool.Pool({
-		"name":		"mysql",
-		"create": function(callback) {
-			var client = mysql.createConnection({
-				"host":		options.host,
-				"port":		options.port,
-				"user": 	options.user,
-				"password":	options.password,
-				"database":	options.database
-			});
-			client.on("error", function(err) {
-				if(!err.fatal)
-				{
-					return;
-				}
-				pool.destroy(client);
-			});
-			callback(null, client);
-		},
-		"destroy": function(client) {
-			client.end(function(err) {
-				client.destroy();
-			});
-		},
-		"max":					options.pool,
-		"idleTimeoutMillis":	options.idle,
-		"log":					false
-	});
 	
 	var that = {};
 	
 	that.destroy = function() {
-		pool.drain(function() {
-			pool.destroyAllNow();
+		pool.end(function(err) {
+			if(err)
+			{
+				pool.destroy();
+			}
 		});
 		that = null;
 	};
+	
 	that.acquire = function(callback) {
 		var retry = function(attempt) {
 			if(attempt++>=10)
@@ -54,26 +35,28 @@ exports = module.exports = (function() {
 				callback(null);
 				return;
 			}
-			pool.acquire(function(err, client) {
-				if(err || !client)
+			pool.getConnection(function(err, connection) {
+				if(err || !connection)
 				{
-					if(client)
+					if(connection)
 					{
-						pool.destroy(client);
+						connection.destroy();
 					}
 					setTimeout(function() {
 						retry(attempt);
 					}, 50);
 					return;
 				}
-				callback(client);
+				callback(connection);
 			});
 		};
 		retry(0);
 	};
-	that.release = function(client) {
-		pool.release(client);
+	
+	that.release = function(connection) {
+		connection.end();
 	};
+	
 	that.query = function(query, args, callback) {
 		if(typeof(args) == "function")
 		{
@@ -88,15 +71,15 @@ exports = module.exports = (function() {
 		{
 			args = [];
 		}
-		that.acquire(function(client) {
-			if(!client)
+		that.acquire(function(connection) {
+			if(!connection)
 			{
-				that.release(client);
-				callback("Could not acquire MySQL client.", null);
+				that.release(connection);
+				callback("Could not acquire MySQL connection.", null);
 				return;
 			}
-			client.query(query, args, function(err, rows) {
-				that.release(client);
+			connection.query(query, args, function(err, rows) {
+				that.release(connection);
 				if(err)
 				{
 					callback(err, null);
@@ -106,6 +89,7 @@ exports = module.exports = (function() {
 			});
 		});
 	};
+	
 	that.transaction = function() {
 		var out = {};
 		var queries = [];
@@ -121,14 +105,14 @@ exports = module.exports = (function() {
 			return out;
 		};
 		out.rollback = function() {
-			that.acquire(function(client) {
-				if(!client)
+			that.acquire(function(connection) {
+				if(!connection)
 				{
-					that.release(client);
+					that.release(connection);
 					return;
 				}
-				client.query("ROLLBACK;", function(err, result) {
-					that.release(client);
+				connection.query("ROLLBACK;", function(err, result) {
+					that.release(connection);
 				});
 			});
 		};
@@ -137,11 +121,11 @@ exports = module.exports = (function() {
 			{
 				callback = (function() {});
 			}
-			that.acquire(function(client) {
-				if(!client)
+			that.acquire(function(connection) {
+				if(!connection)
 				{
-					that.release(client);
-					callback("Could not acquire MySQL client.", null);
+					that.release(connection);
+					callback("Could not acquire MySQL connection.", null);
 					return;
 				}
 				queries.unshift({
@@ -156,17 +140,17 @@ exports = module.exports = (function() {
 				function runQueries()
 				{
 					var query = queries.shift();
-					client.query(query.query, query.args, function(err, result) {
+					connection.query(query.query, query.args, function(err, result) {
 						if(err)
 						{
-							that.release(client);
+							that.release(connection);
 							out.rollback();
 							callback(err, null);
 							return;
 						}
 						if(queries.length<=0)
 						{
-							that.release(client);
+							that.release(connection);
 							callback(null, result);
 							return;
 						}
@@ -180,5 +164,5 @@ exports = module.exports = (function() {
 		return out;
 	};
 	
-	return that;*/
+	return that;
 })();
