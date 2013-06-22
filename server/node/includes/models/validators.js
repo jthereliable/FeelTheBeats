@@ -22,19 +22,29 @@ var isDate = exports.isDate = function(test) {
 };
 
 var date = exports.date = function(min_date, max_date) {
-	min_date = moment(String(min_date));
-	max_date = moment(String(max_date));
-	if(!min_date.isValid())
+	if(isEmpty(min_date))
 	{
 		min_date = 0;
 	} else {
-		min_date = +min_date;
+		min_date = moment(String(min_date));
+		if(!min_date.isValid())
+		{
+			min_date = 0;
+		} else {
+			min_date = +min_date;
+		}
 	}
-	if(!max_date.isValid())
+	if(isEmpty(max_date))
 	{
 		max_date = Infinity;
 	} else {
-		max_date = +max_date;
+		max_date = moment(String(max_date));
+		if(!max_date.isValid())
+		{
+			max_date = Infinity;
+		} else {
+			max_date = +max_date;
+		}
 	}
 	
 	return (function(test) {
@@ -44,6 +54,10 @@ var date = exports.date = function(min_date, max_date) {
 };
 
 var enum = exports.enum = function(fields) {
+	if(isEmpty(fields) || !(fields instanceof Array))
+	{
+		fields = [];
+	}
 	return (function(test) {
 		return (fields.indexOf(test) > -1);
 	});
