@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jun 12, 2013 at 06:38 PM
+-- Generation Time: Jun 29, 2013 at 10:43 AM
 -- Server version: 5.5.31-0ubuntu0.13.04.1
 -- PHP Version: 5.4.9-4ubuntu2.1
 
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `Artists` (
   `description` text NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uid` (`uid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8 AUTO_INCREMENT=2 ;
 
 -- --------------------------------------------------------
 
@@ -124,7 +124,7 @@ INSERT INTO `frm_Categories` (`id`, `name`) VALUES
 DROP TABLE IF EXISTS `frm_Forums`;
 CREATE TABLE IF NOT EXISTS `frm_Forums` (
   `fid` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `category` int(11) unsigned NOT NULL COMMENT 'Category ID',
+  `category` int(11) unsigned DEFAULT NULL COMMENT 'Category ID',
   `name` varchar(64) NOT NULL,
   `description` text NOT NULL,
   `last_post` int(11) unsigned DEFAULT NULL COMMENT 'Last Post ID',
@@ -167,7 +167,7 @@ INSERT INTO `frm_Forums` (`fid`, `category`, `name`, `description`, `last_post`,
 DROP TABLE IF EXISTS `frm_Posts`;
 CREATE TABLE IF NOT EXISTS `frm_Posts` (
   `pid` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `tid` int(11) unsigned NOT NULL COMMENT 'Topic ID',
+  `tid` int(11) unsigned DEFAULT NULL COMMENT 'Topic ID',
   `text` mediumtext NOT NULL,
   `owner` int(11) unsigned DEFAULT NULL COMMENT 'User ID of owner',
   `date_posted` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -210,7 +210,7 @@ DELIMITER ;
 DROP TABLE IF EXISTS `frm_Topics`;
 CREATE TABLE IF NOT EXISTS `frm_Topics` (
   `tid` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `fid` int(11) unsigned NOT NULL COMMENT 'Forum ID',
+  `fid` int(11) unsigned DEFAULT NULL COMMENT 'Forum ID',
   `title` varchar(255) NOT NULL,
   `owner` int(11) unsigned DEFAULT NULL COMMENT 'User ID of owner',
   `locked` tinyint(1) NOT NULL DEFAULT '0',
@@ -317,7 +317,7 @@ CREATE TABLE IF NOT EXISTS `Groups` (
   `name` varchar(64) NOT NULL,
   `description` text NOT NULL,
   `image` varchar(255) NOT NULL,
-  `owner` int(10) unsigned NOT NULL,
+  `owner` int(10) unsigned DEFAULT NULL,
   `members` int(10) unsigned NOT NULL DEFAULT '0',
   `date_formed` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`gid`),
@@ -336,12 +336,12 @@ CREATE TABLE IF NOT EXISTS `Songs` (
   `sid` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `owner` int(10) unsigned DEFAULT NULL COMMENT 'User ID of song owner',
   `artist` int(10) unsigned DEFAULT NULL COMMENT 'Artist ID of song artist',
-  `name` text NOT NULL,
+  `name` varchar(255) NOT NULL,
   `description` mediumtext NOT NULL,
   `url` varchar(255) NOT NULL,
   `image` varchar(255) NOT NULL,
   `genres` bit(32) NOT NULL COMMENT 'Bit map representing genre of song',
-  `topic_id` int(11) unsigned NOT NULL COMMENT 'Song Comments Topic ID',
+  `topic_id` int(11) unsigned DEFAULT NULL COMMENT 'Song Comments Topic ID',
   `rating_mod_difficulty` decimal(5,3) NOT NULL,
   `rating_mod_quality` decimal(5,3) NOT NULL,
   `rating_user_difficulty` decimal(5,3) NOT NULL,
