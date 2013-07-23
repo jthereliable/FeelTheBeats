@@ -12,8 +12,7 @@ var field_settings = {
 };
 
 exports.get = function(req, res) {
-	var query = mysql_query_builder.select_group_request(User, "Users", field_settings, 25, req.query);
-	mysql.query(query, function(err, rows) {
+	mysql_query_builder.select_rows_request(User, "Users", field_settings, 25, req.query, function(err, rows) {
 		if(err)
 		{
 			logger.err(err);
