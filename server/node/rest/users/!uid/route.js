@@ -7,8 +7,9 @@ var mysql				= require("database/mysql.js"),
 	flat				= require("flat.js"),
 	async				= require("async");
 
-var get_field_settings = {
-	"requestable": ["uid", "name", "image", "tier", "mod_level", "charter_level", "date_join", "date_login", "ratings", "group"],
+// REDO GET_SETTINGS; FIGURE OUT A SPECIFICATION!
+var get_settings = {
+	"request_allowed": ["uid", "name", "image", "tier", "mod_level", "charter_level", "date_join", "date_login", "ratings", "group"],
 	"request_default": ["uid", "name", "image", "tier", "mod_level", "charter_level"],
 	"mongo": {
 		"ratings": [{
@@ -30,13 +31,13 @@ var get_field_settings = {
 		}]
 	}
 };
-mongo_query_builder.select_row_preprocess(get_field_settings);
+mongo_query_builder.select_row_preprocess(get_settings);
 
 exports.get = function(req, res) {
 	var out;
 	async.series([
 		function(next) {
-			mysql_query_builder.select_row_request(User, "Users", get_field_settings, req.params, req.query, function(err, rows) {
+			mysql_query_builder.select_row_request(User, get_settings, req, function(err, rows) {
 				if(err)
 				{
 					logger.err(err);
@@ -57,7 +58,7 @@ exports.get = function(req, res) {
 			});
 		},
 		function(next) {
-			mongo_query_builder.select_row_request(User, get_field_settings, req.params, req.query, function(err, row) {
+			mongo_query_builder.select_row_request(User, get_settings, req, function(err, row) {
 				if(err)
 				{
 					logger.err(err);
