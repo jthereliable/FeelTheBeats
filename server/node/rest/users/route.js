@@ -1,28 +1,27 @@
 var mysql				= require("database/mysql.js"),
-	mysql_query_builder	= require("rest/mysql_query_builder.js"),
-	User				= require("models/community/User.js"),
+	requestable			= require("misc/requestable.js"),
 	__					= require("underscore"),
 	logger				= require("debug/logger.js");
 
-var field_settings = {
-	"requestable": ["uid", "name", "image", "tier", "mod_level", "charter_level", "date_join", "date_login"],
-	"request_default": ["uid", "name", "image", "tier", "mod_level", "charter_level"],
-	"where": ["name", "tier", "mod_level", "charter_level"],
-	"order": ["uid", "name", "tier", "points", "experience", "mod_level", "charter_level", "date_join", "date_login"]
-};
-
+var get_params_order = ["uid", "name", "tier", "points", "experience"];
+var get_params_query = ["name", "tier", "mod_level", "charter_level"];
+var get_params_query_string = ["name"];
 exports.get = function(req, res) {
-	mysql_query_builder.select_rows_request(User, "Users", field_settings, 25, req.query, function(err, rows) {
+	var limits = requestable.limits(req, get_params_order, 25);
+	var where = requestable.where(req, get_params_query, get_params_query_string);
+	
+	mysql.query("SELECT `uid`, `name`, `image`, `tier`, `mod_level`, `charter_level`, `date_join`, `date_login`			\
+				FROM `Users` WHERE "+where+"																			\
+				ORDER BY ?? "+limits.sort+"																				\
+				LIMIT ?, ?",
+	[limits.order, limits.offset, limits.limit], function(err, rows) {
 		if(err)
 		{
-			logger.err(err);
 			res.json({
-				"success": false,
-				"error": 0
+				"err": "MySQL Error"
 			});
 			return;
 		}
-		
 		res.json(rows);
 	});
 };
