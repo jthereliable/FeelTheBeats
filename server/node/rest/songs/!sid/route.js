@@ -11,9 +11,13 @@ var get_fields = {
 	},
 	"description": {
 	},
+	"url": {
+	},
 	"image": {
 	},
 	"genres": {
+	},
+	"topic_id": {
 	},
 	"timestamp": {
 	},

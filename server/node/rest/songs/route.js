@@ -21,7 +21,63 @@ var get_fields = {
 		"bit": true
 	},
 	"timestamp": {
-		"sort": -1
+		"sort": -1,
+		"ignore": true
+	},
+	
+	"owner.uid": {
+		"tables": [
+			{
+				"table": "Users",
+				"on": [
+					"Users.uid",
+					"Songs.owner"
+				]
+			}
+		],
+		"name": "Users.uid",
+		"queryable": true
+	},
+	"owner.name": {
+		"tables": [
+			{
+				"table": "Users",
+				"on": [
+					"Users.uid",
+					"Songs.owner"
+				]
+			}
+		],
+		"name": "Users.name",
+		"queryable": true
+	},
+	"artist.id": {
+		"tables": [
+			{
+				"table": "Artists",
+				"on": [
+					"Artists.id",
+					"Songs.artist"
+				]
+			}
+		],
+		"name": "Artists.id",
+		"queryable": true,
+		"string": true
+	},
+	"artist.name": {
+		"tables": [
+			{
+				"table": "Artists",
+				"on": [
+					"Artists.id",
+					"Songs.artist"
+				]
+			}
+		],
+		"name": "Artists.name",
+		"queryable": true,
+		"string": true
 	}
 };
 exports.get = function(req, res) {
