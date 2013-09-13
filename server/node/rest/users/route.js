@@ -3,8 +3,38 @@ var mysql				= require("database/mysql.js"),
 	__					= require("underscore"),
 	logger				= require("debug/logger.js");
 
-var get_params_order = ["uid", "name", "tier", "points", "experience"];
-var get_params_query = {
+/*
+	{
+		"request.name": {
+			"name": "database.name"
+		}
+	}
+*/
+var get_fields = {
+	"uid": {
+	},
+	"name": {
+	},
+	"image": {
+	},
+	"tier": {
+	},
+	"points": {
+	},
+	"experience": {
+	},
+	"mod_level": {
+	},
+	"charter_level": {
+	},
+	"date_join": {
+		"ignore": true
+	},
+	"date_login": {
+		"ignore": true
+	}
+};
+var get_where = {
 	"name": {
 		"string": true
 	},
@@ -12,12 +42,29 @@ var get_params_query = {
 	"mod_level": {},
 	"charter_level": {}
 };
-var get_params_query_string = ["name"];
+var get_order = {
+	"uid": {
+		"def": true
+	},
+	"name": {
+	},
+	"tier": {
+		"sort": -1
+	},
+	"points": {
+		"sort": -1
+	},
+	"experience": {
+		"sort": -1
+	},
+	"date_join": {
+	}
+};
 exports.get = function(req, res) {
-	mysql.query("SELECT `uid`, `name`, `image`, `tier`, `mod_level`, `charter_level`, `date_join`, `date_login`			\
-				FROM `Users`" +
-				requestable.where(req, get_params_query) +
-				requestable.limits(req, get_params_order, 25),
+	mysql.query("SELECT " + requestable.select.fields(req, get_fields) +
+				"FROM `Users` " +
+				requestable.select.where(req, get_where) +
+				requestable.select.order(req, get_order, 25),
 	function(err, rows) {
 		if(err)
 		{
