@@ -1,6 +1,6 @@
 {
 	"title": "Retrieve list of artists",
-	"path": "/groups/!gid/requests/?",
+	"path": "/artists/?",
 	"methods": [
 		{
 			"method": "get",

@@ -7,42 +7,16 @@ var mysql				= require("database/mysql.js"),
 	async				= require("async");
 
 var get_fields = {
-	"id": {
+	"sid": {
 	},
 	"name": {
 	},
-	"url": {
-	},
-	"description": {
-	},
-	"user.uid": {
-		"tables": [
-			{
-				"table": "Users",
-				"on": [
-					"Users.uid",
-					"Artists.uid"
-				]
-			}
-		],
-		"name": "Users.uid"
-	},
-	"user.name": {
-		"tables": [
-			{
-				"table": "Users",
-				"on": [
-					"Users.uid",
-					"Artists.uid"
-				]
-			}
-		],
-		"name": "Users.name"
+	"image": {
 	}
 };
 exports.get = function(req, res) {
 	var id = req.params.id|0;
-	requestable.model.get(req, "Artists", {"id": id}, get_fields,
+	requestable.collection.get(req, "Songs", {"Songs.artist": id}, get_fields, 25,
 		function(err, row) {
 			if(err)
 			{
