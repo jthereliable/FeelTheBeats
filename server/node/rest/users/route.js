@@ -3,76 +3,54 @@ var mysql				= require("database/mysql.js"),
 	__					= require("underscore"),
 	logger				= require("debug/logger.js");
 
-/*
-	{
-		"request.name": {
-			"name": "database.name"
-		}
-	}
-*/
+
 var get_fields = {
 	"uid": {
+		"default_order": true,
+		"sort": 1
 	},
 	"name": {
+		"queryable": true,
+		"sort": 1,
+		"string": true
 	},
 	"image": {
 	},
 	"tier": {
+		"queryable": true,
+		"sort": -1
 	},
 	"points": {
+		"sort": -1
 	},
 	"experience": {
+		"sort": -1
 	},
 	"mod_level": {
+		"queryable": true,
 	},
 	"charter_level": {
+		"queryable": true,
 	},
 	"date_join": {
+		"sort": 1,
 		"ignore": true
 	},
 	"date_login": {
 		"ignore": true
 	}
 };
-var get_where = {
-	"name": {
-		"string": true
-	},
-	"tier": {},
-	"mod_level": {},
-	"charter_level": {}
-};
-var get_order = {
-	"uid": {
-		"def": true
-	},
-	"name": {
-	},
-	"tier": {
-		"sort": -1
-	},
-	"points": {
-		"sort": -1
-	},
-	"experience": {
-		"sort": -1
-	},
-	"date_join": {
-	}
-};
 exports.get = function(req, res) {
-	mysql.query("SELECT " + requestable.select.fields(req, get_fields) +
-				"FROM `Users` " +
-				requestable.select.where(req, get_where) +
-				requestable.select.order(req, get_order, 25),
-	function(err, rows) {
-		if(err)
-		{
-			res.json({
-				"err": "MySQL Error"
-			});
-			return;
+	requestable.collection.get(req, "Users", null, get_fields, 25,
+		function(err, rows) {
+			if(err)
+			{
+				res.json({
+					"err": "Database Error"
+				});
+				return;
+			}
+			res.json(rows);
 		}
-		res.json(rows);
-	});
+	);
 };
