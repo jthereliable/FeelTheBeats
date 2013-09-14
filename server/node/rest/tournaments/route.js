@@ -108,7 +108,14 @@ var get_fields = {
 	}
 };
 exports.get = function(req, res) {
-	requestable.collection.get(req, "Tournaments", null, get_fields, 25,
+	var query = null;
+	if(!req.query.archived)
+	{
+		query = {
+			"archived": false
+		};
+	}
+	requestable.collection.get(req, "Tournaments", query, get_fields, 25,
 		function(err, rows) {
 			if(err)
 			{
