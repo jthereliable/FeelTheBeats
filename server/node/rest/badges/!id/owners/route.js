@@ -43,7 +43,7 @@ exports.get = function(req, res) {
 				.sort(sorting)
 				.limit(limit)
 				.skip(offset)
-				.toArray(function(err, rows) {
+			.toArray(function(err, rows) {
 				if(err)
 				{
 					res.json({
