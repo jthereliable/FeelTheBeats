@@ -96,7 +96,10 @@ var get_fields = {
 		"name": "Users.name"
 	},
 	
-	"category": {
+	"category.id": {
+		"name": "frm_Forums.category"
+	},
+	"category.name": {
 		"tables": [
 			{
 				"table": "frm_Categories",
