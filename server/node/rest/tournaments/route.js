@@ -11,7 +11,7 @@ var get_fields = {
 	"name": {
 		"queryable": true,
 		"sort": 1,
-		"string": true
+		"type": "string"
 	},
 	"date_start": {
 		"default_order": true,

@@ -12,7 +12,7 @@ var get_fields = {
 	"name": {
 		"queryable": true,
 		"sort": 1,
-		"string": true
+		"type": "string"
 	},
 	"image": {
 	},
@@ -48,7 +48,7 @@ var get_fields = {
 		],
 		"name": "Charts.name",
 		"queryable": true,
-		"string": true
+		"type": "string"
 	},
 	"chart.song.sid": {
 		"tables": [
@@ -82,7 +82,7 @@ var get_fields = {
 		],
 		"name": "Songs.name",
 		"queryable": true,
-		"string": true
+		"type": "string"
 	}
 };
 exports.get = function(req, res) {

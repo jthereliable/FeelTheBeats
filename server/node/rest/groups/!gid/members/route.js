@@ -22,7 +22,7 @@ var get_fields = {
 		"name": "Users.name",
 		"queryable": true,
 		"sort": 1,
-		"string": true
+		"type": "string"
 	},
 	"image": {
 		"tables": [

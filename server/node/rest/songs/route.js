@@ -12,13 +12,13 @@ var get_fields = {
 	"name": {
 		"queryable": true,
 		"sort": 1,
-		"string": true
+		"type": "string"
 	},
 	"image": {
 	},
 	"genres": {
 		"queryable": true,
-		"bit": true
+		"type": "bit"
 	},
 	"timestamp": {
 		"sort": -1,
@@ -63,7 +63,7 @@ var get_fields = {
 		],
 		"name": "Artists.id",
 		"queryable": true,
-		"string": true
+		"type": "string"
 	},
 	"artist.name": {
 		"tables": [
@@ -77,7 +77,7 @@ var get_fields = {
 		],
 		"name": "Artists.name",
 		"queryable": true,
-		"string": true
+		"type": "string"
 	}
 };
 exports.get = function(req, res) {

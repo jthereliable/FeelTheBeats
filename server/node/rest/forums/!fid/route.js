@@ -51,7 +51,7 @@ var get_forum_fields = {
 	"title": {
 		"queryable": true,
 		"sort": 1,
-		"string": true
+		"type": "string"
 	},
 	
 	"views": {
@@ -107,8 +107,20 @@ exports.get = function(req, res) {
 	var mod_level = 0;
 	var charter_level = 0; // TODO: Set to max if mod_level > x?
 	
-	var offset = 0; // TODO: Get from req.query
-	var limit = 50; // TODO: Get from req.query
+	var offset = req.query.offset|0 || 0;
+	var limit = req.query.limit|0 || 50;
+	if(offset < 0)
+	{
+		offset = 0;
+	}
+	if(limit < 1)
+	{
+		limit = 1;
+	}
+	if(limit > 50)
+	{
+		limit = 50;
+	}
 	
 	var fid = req.params.fid|0;
 	
@@ -116,6 +128,7 @@ exports.get = function(req, res) {
 	async.series([
 		function(next) {
 			requestable.model.get({}, "frm_Forums", {
+				"fid": fid,
 				"view_mod_level_min": {
 					"$lte": mod_level
 				},
@@ -129,6 +142,7 @@ exports.get = function(req, res) {
 						res.json({
 							"err": "Database Error"
 						});
+						return;
 					}
 					if(__.isEmpty(row))
 					{
@@ -141,7 +155,6 @@ exports.get = function(req, res) {
 			);
 		},
 		function(next) {
-			// TODO: moved_from, moved_date fields (need to left join forums)
 			var sql = squel.select()
 							.field("tid")
 							.field("title")
@@ -153,9 +166,13 @@ exports.get = function(req, res) {
 							.field("date_replied")
 							.field("Users.uid", "owner.uid")
 							.field("Users.name", "owner.name")
+							.field("moved_from", "moved.fid")
+							.field("frm_Forums.name", "moved.name")
+							.field("moved_date", "moved.timestamp")
 						.from("frm_Topics")
 							.left_join("Users", null, "frm_Topics.owner = Users.uid")
-						.where("fid = ?", fid)
+							.left_join("frm_Forums", null, "frm_Topics.moved_from = frm_Forums.fid")
+						.where("frm_Topics.fid = ?", fid)
 						.order("stickied", false)
 						.order("date_"+out.forum.order_by, false)
 						.offset(offset)
@@ -165,11 +182,33 @@ exports.get = function(req, res) {
 				if(err)
 				{
 					res.json({
-						"err": "Database Error",
-						"_err": err
+						"err": "Database Error"
 					});
+					return;
 				}
 				out.topics = rows;
+				next();
+			});
+		},
+		function(next) {
+			var sql = squel.select()
+							.field("COUNT(*)", "count")
+						.from("frm_Topics")
+						.where("fid = ?", fid)
+					.toString();
+			mysql.query(sql, function(err, rows) {
+				if(err)
+				{
+					res.json({
+						"err": "Database Error"
+					});
+					return;
+				}
+				out.count = {
+					"count": rows[0],
+					"offset": offset,
+					"limit": limit
+				};
 				next();
 			});
 		},
@@ -177,17 +216,4 @@ exports.get = function(req, res) {
 			res.json(out);
 		}
 	]);
-	
-	/*requestable.collection.get(req, "frm_Topics", null, get_fields, 25,
-		function(err, rows) {
-			if(err)
-			{
-				res.json({
-					"err": "Database Error"
-				});
-				return;
-			}
-			res.json(rows);
-		}
-	);*/
 };

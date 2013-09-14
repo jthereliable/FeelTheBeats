@@ -12,7 +12,7 @@ var get_fields = {
 	"name": {
 		"queryable": true,
 		"sort": 1,
-		"string": true
+		"type": "string"
 	},
 	"url": {
 	},
@@ -41,7 +41,7 @@ var get_fields = {
 		"name": "Users.name",
 		"queryable": true,
 		"sort": 1,
-		"string": true
+		"type": "string"
 	}
 };
 exports.get = function(req, res) {

@@ -12,7 +12,7 @@ var get_fields = {
 	"name": {
 		"queryable": true,
 		"sort": 1,
-		"string": true
+		"type": "string"
 	},
 	"description": {
 	},
@@ -110,7 +110,7 @@ var get_fields = {
 			}
 		],
 		"name": "frm_Categories.name",
-		"string": true,
+		"type": "string",
 		"queryable": true
 	}
 };
