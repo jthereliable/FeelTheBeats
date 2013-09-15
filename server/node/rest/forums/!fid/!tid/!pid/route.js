@@ -146,9 +146,8 @@ var get_fields = {
 };
 
 exports.get = function(req, res) {
-	// TODO: get mod/charter level from token
-	var mod_level = 0;
-	var charter_level = 0; // TODO: Set to max if mod_level > x?
+	var mod_level = res.locals.token.access.mod;
+	var charter_level = res.locals.token.access.charter;
 	
 	var fid = req.params.fid|0;
 	var tid = req.params.tid|0;

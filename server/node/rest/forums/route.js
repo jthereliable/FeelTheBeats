@@ -115,9 +115,8 @@ var get_fields = {
 	}
 };
 exports.get = function(req, res) {
-	// TODO: get mod/charter level from token
-	var mod_level = 0;
-	var charter_level = 0; // Set to max if mod_level > x?
+	var mod_level = res.locals.token.access.mod;
+	var charter_level = res.locals.token.access.charter;
 	
 	requestable.collection.get(req, "frm_Forums", {
 		"view_mod_level_min": {

@@ -1,10 +1,17 @@
-var express		= require("express"),
-	async		= require("async"),
-	fs			= require("fs"),
-	settings	= require("settings");
+var express			= require("express"),
+	async			= require("async"),
+	fs				= require("fs"),
+	settings		= require("settings"),
+	tokenparser		= require("misc/tokenparser");
+
 var debug_mode = (settings.server.environment == "debug");
 
 var app = express();
+app.use(express.compress());
+app.use(express.bodyParser());
+/*app.use(express.session());
+app.use(express.csrf());*/
+app.use(tokenparser);
 
 var paths = [];
 function scanDirectory(dir, cb)
