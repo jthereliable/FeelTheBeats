@@ -42,7 +42,7 @@
 			"notes": "Check user token status.",
 			"parameters": [
 				{
-					"name": "token",
+					"name": "check",
 					"notes": "User token",
 					"required": true
 				}
