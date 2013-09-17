@@ -167,8 +167,8 @@ exports.post = function(req, res) {
 	]);
 };
 exports.put = function(req, res) {
-	var token = res.locals.token.uid;
-	if(res.locals.token.uid == 0)
+	var token = res.locals;
+	if(token.uid == 0)
 	{
 		res.json({
 			"err": "Not logged in."
@@ -176,7 +176,7 @@ exports.put = function(req, res) {
 		return;
 	}
 	mongo.collection("UserTokens").find({
-		"uid": res.locals.token.uid
+		"uid": token.uid
 	}, {
 		"_id": 0,
 		"token": 1
@@ -198,6 +198,38 @@ exports.put = function(req, res) {
 		var out = tokenizer.generate(token.uid, token, null, rows[0].token);
 		res.json({
 			"token": out
+		});
+	});
+};
+exports.del = function(req, res) {
+	var token = res.locals.token;
+	if(token.uid == 0)
+	{
+		res.json({
+			"err": "Not logged in."
+		});
+		return;
+	}
+	var token_salt = string.random(32);
+	mongo.collection("UserTokens").update({
+		"uid": token.uid
+	}, {
+		"$set": {
+			"token": token_salt
+		}
+	}, {
+		"upsert": true
+	}, function(err) {
+		if(err)
+		{
+			res.json({
+				"err": "Database Error"
+			});
+			return;
+		}
+		res.json({
+			"success": true,
+			"token": ""
 		});
 	});
 };
