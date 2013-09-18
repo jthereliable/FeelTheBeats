@@ -18,6 +18,11 @@
 					"required": true
 				},
 				{
+					"name": "name",
+					"notes": "User name. Minimum length of 2 characters.",
+					"required": true
+				},
+				{
 					"name": "recaptcha_response",
 					"notes": "reCaptcha response field",
 					"required": true
