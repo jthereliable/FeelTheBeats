@@ -40,7 +40,7 @@ scanDirectory = (dir, cb) ->
 methods = ["get", "post", "put", "del"]
 scanDirectory "./rest", () ->
   async.each paths, (dir, next) ->
-    path = ((dir.replace /^\.\/rest/, "").replace /\/\!/g,"/:") + "/?"
+    path = dir.replace(/^\.\/rest/, "").replace(/\/\!/g,"/:") + "/?"
     rest = require "#{dir}/route.js"
     for method in methods
       if rest[method] instanceof Function
