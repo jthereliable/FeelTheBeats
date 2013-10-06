@@ -1,8 +1,7 @@
-var mysql				= require("database/mysql.js"),
-	requestable			= require("misc/requestable.js"),
+var mysql				= require("database/mysql"),
+	requestable			= require("misc/requestable"),
 	__					= require("underscore"),
-	logger				= require("debug/logger.js");
-
+	logger				= require("debug/logger");
 
 var get_fields = {
 	"id": {
